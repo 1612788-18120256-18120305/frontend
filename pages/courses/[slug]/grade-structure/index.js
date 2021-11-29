@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { BACKEND_URL } from '../../../../lib/Utils';
 import { getSession } from 'next-auth/react';
 import { DragDropContext, Droppable, Draggable } from '../../../../components/common/dnd_component';
 import axios from 'axios';
 
-function GradeStructure({ listAssignment, _session, slug }) {
+function GradeStructure({ listAssignment, _session, slug, course }) {
   const [title, setTitle] = useState('');
   const [detail, setDetail] = useState('');
   const [assignments, setAssignments] = useState(listAssignment);
@@ -17,8 +17,6 @@ function GradeStructure({ listAssignment, _session, slug }) {
       setDetail(e.target.value);
     }
   }
-
-  console.log(assignments);
 
   async function handleCreateAssigment(event) {
     event.preventDefault();
@@ -39,18 +37,36 @@ function GradeStructure({ listAssignment, _session, slug }) {
     setDetail('');
   }
 
+  async function handleOnDrapEnd(result) {
+    console.log(result);
+    const items = Array.from(assignments);
+    const [reorderedItems] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItems);
+    setAssignments(items);
+    const assignmentIds = items.map((item) => item._id);
+    const res = await axios.put(
+      BACKEND_URL + `/courses/${course._id}`,
+      { assignments: assignmentIds },
+      {
+        headers: {
+          Authorization: `Bearer ${_session?.jwt}`,
+        },
+      }
+    );
+  }
+
   return (
     <div className="mt-4 w-2/5 mx-auto">
       <div className="font-semibold text-center py-6 bordered">
         <h2 className="text-3xl text-red-500">Grade Structure</h2>
       </div>
-      <DragDropContext>
-        <Droppable droppableId="droppable">
+      <DragDropContext onDragEnd={handleOnDrapEnd}>
+        <Droppable droppableId="assignments">
           {(provided) => (
-            <ul className="" {...provided.droppableProps} ref={provided.innerRef}>
+            <ul className="assignments" {...provided.droppableProps} ref={provided.innerRef}>
               {assignments.map((item, index) => (
                 <Draggable key={item._id} draggableId={item._id} index={index}>
-                  {(provided, snapshot) => (
+                  {(provided) => (
                     <li
                       className="flex flex-col mb-3 rounded bg-gray-100 p-4"
                       {...provided.draggableProps}
@@ -125,6 +141,7 @@ function GradeStructure({ listAssignment, _session, slug }) {
                   )}
                 </Draggable>
               ))}
+              {provided.placeholder}
             </ul>
           )}
         </Droppable>
@@ -181,17 +198,31 @@ export default GradeStructure;
 
 export const getServerSideProps = async (context) => {
   const _session = await getSession(context);
-  const res = await fetch(BACKEND_URL + `/courses/${context.query.slug}/assignment`, {
+  const res = await fetch(BACKEND_URL + `/courses/${context.query.slug}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${_session?.jwt}`,
     },
   });
+
   const data = await res.json();
+
+  console.log(data.course.teachers);
+  console.log(_session.user._id);
+
+  const temp = data.course.teachers.map((item) => item._id);
+
+  if (!temp.includes(_session.user._id)) {
+    return {
+      notFound: true,
+    };
+  }
+
   return {
     props: {
-      listAssignment: data.assignments,
+      course: data.course,
+      listAssignment: data.course.assignments,
       _session: _session,
       slug: context.query.slug,
     },
