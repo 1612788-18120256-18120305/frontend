@@ -1,7 +1,6 @@
+import { getSession } from "next-auth/react";
 import Head from "next/head";
-import Image from "next/image";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+import { BACKEND_URL } from "../lib/Utils";
 
 export default function Home() {
   return (
@@ -13,8 +12,38 @@ export default function Home() {
       </Head>
 
       <div className="flex justify-center h-screen items-center text-red-500 font-bold text-5xl">
-        Hello World!
+        {BACKEND_URL}
       </div>
     </>
   );
+}
+
+export async function getServerSideProps(ctx) {
+  const _session = await getSession(ctx);
+  const res = await fetch(BACKEND_URL + ("/users/" + _session?.user?._id), {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${_session?.jwt}`,
+    },
+  });
+  if (res.ok) {
+    const _data = await res.json();
+    if (_data.success) {
+      return {
+        props: { _session, _data },
+      };
+    } else {
+      return {
+        props: { _session, _data: null },
+      };
+    }
+  } else {
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/auth/login",
+      },
+    };
+  }
 }

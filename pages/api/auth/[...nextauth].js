@@ -3,7 +3,7 @@ import axios from "axios";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook";
-import { getApiUrl } from "../../../lib/Utils";
+import { BACKEND_URL } from "../../../lib/Utils";
 
 export default NextAuth({
   // Configure one or more authentication providers
@@ -38,7 +38,7 @@ export default NextAuth({
         // e.g. return { id: 1, name: 'J Smith', email: 'jsmith@example.com' }
         // You can also use the `req` object to obtain additional parameters
         // (i.e., the request IP address)
-        const res = await fetch(getApiUrl("/auth/login"), {
+        const res = await fetch(BACKEND_URL + "/auth/login", {
           method: "POST",
           body: JSON.stringify(credentials),
           headers: { "Content-Type": "application/json" },
@@ -60,14 +60,14 @@ export default NextAuth({
       if (account) {
         let data;
         if (account.provider === "google") {
-          const res = await axios.get(getApiUrl("/auth/google/token"), {
+          const res = await axios.get(BACKEND_URL + "/auth/google/token", {
             headers: {
               access_token: account.access_token,
             },
           });
           data = res.data;
         } else if (account.provider === "facebook") {
-          const res = await axios.get(getApiUrl("/auth/facebook/token"), {
+          const res = await axios.get(BACKEND_URL + "/auth/facebook/token", {
             headers: {
               access_token: account.access_token,
             },

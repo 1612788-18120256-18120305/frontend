@@ -1,17 +1,17 @@
-import { getSession } from 'next-auth/react';
-import { getApiUrl } from '../../../lib/Utils';
-import { useState } from 'react';
-import InviteModal from '../../../components/Course/InviteModal';
-import axios from 'axios';
+import { getSession } from "next-auth/react";
+import { BACKEND_URL } from "../../../lib/Utils";
+import { useState } from "react";
+import InviteModal from "../../../components/Course/InviteModal";
+import axios from "axios";
 
-export default function Users({ _session, _data, API_URL }) {
+export default function Users({ _session, _data }) {
   const [showInviteTeacher, setShowInviteTeacher] = useState(false);
   const [showInviteStudent, setShowInviteStudent] = useState(false);
   const [inviteError, setInviteError] = useState(null);
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   async function handleInviteTeacherSubmit() {
     const invitation = await axios.post(
-      `${API_URL}/courses/invite`,
+      `${BACKEND_URL}/courses/invite`,
       {
         courseId: _data.course._id,
         email,
@@ -25,7 +25,7 @@ export default function Users({ _session, _data, API_URL }) {
     );
     if (invitation.data.success) {
       setShowInviteTeacher(false);
-      setEmail('');
+      setEmail("");
     } else {
       setInviteError(invitation.data.message);
     }
@@ -33,7 +33,7 @@ export default function Users({ _session, _data, API_URL }) {
 
   async function handleInviteStudentSubmit() {
     const invitation = await axios.post(
-      `${getApiUrl()}/courses/invite`,
+      `${BACKEND_URL}/courses/invite`,
       {
         courseId: _data.course._id,
         email,
@@ -47,7 +47,7 @@ export default function Users({ _session, _data, API_URL }) {
     );
     if (invitation.data.success) {
       setShowInviteStudent(false);
-      setEmail('');
+      setEmail("");
     } else {
       setInviteError(invitation.data.message);
     }
@@ -199,10 +199,10 @@ export default function Users({ _session, _data, API_URL }) {
 export async function getServerSideProps(ctx) {
   const _session = await getSession(ctx);
 
-  const res = await fetch(getApiUrl('/courses/' + ctx.query.slug), {
-    method: 'GET',
+  const res = await fetch(BACKEND_URL + ("/courses/" + ctx.query.slug), {
+    method: "GET",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${_session?.jwt}`,
     },
   });
@@ -210,13 +210,13 @@ export async function getServerSideProps(ctx) {
     const _data = await res.json();
     if (_data.success) {
       return {
-        props: { _session, _data, API_URL: getApiUrl() },
+        props: { _session, _data },
       };
     } else {
       return {
         redirect: {
           permanent: false,
-          destination: '/courses',
+          destination: "/courses",
         },
       };
     }
@@ -224,7 +224,7 @@ export async function getServerSideProps(ctx) {
     return {
       redirect: {
         permanent: false,
-        destination: '/auth/login',
+        destination: "/auth/login",
       },
     };
   }

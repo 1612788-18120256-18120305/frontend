@@ -1,18 +1,19 @@
 import { getSession } from "next-auth/react";
 import { useState } from "react";
 import Loading from "../../../components/Loading";
-import { getApiUrl } from "../../../lib/Utils";
+import { BACKEND_URL } from "../../../lib/Utils";
 
-export default function Profile({ _session, _data, API_URL }) {
+export default function Profile({ _session, _data }) {
   // console.log("data", _data);
   const [studentId, setStudentId] = useState(_data?.user?.student);
+  const [activeStudentId, setActiveStudentId] = useState(_data?.user?.student);
   const [email, setEmail] = useState(_data?.user?.email);
   const [name, setName] = useState(_data?.user?.name);
   const [alert, setAlert] = useState("");
 
   const handleSubmit = async () => {
     setAlert("");
-    fetch(API_URL + "/users/" + _data?.user?._id, {
+    fetch(BACKEND_URL + "/users/" + _data?.user?._id, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -22,8 +23,12 @@ export default function Profile({ _session, _data, API_URL }) {
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data.success == false) setAlert("StudentId already exists");
-        else setAlert("Updated profile");
+        if (data.success == false) {
+          setAlert("StudentId already exists");
+        } else {
+          setAlert("Updated profile");
+          setActiveStudentId(true);
+        }
         // console.log(_session, _data, data, "Updated profile");
       })
       .catch((error) => {
@@ -69,7 +74,7 @@ export default function Profile({ _session, _data, API_URL }) {
                               value={email}
                               onChange={(e) => setEmail(e.target.value)}
                               disabled
-                              className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                              className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-gray-300"
                             />
                           </div>
 
@@ -103,7 +108,10 @@ export default function Profile({ _session, _data, API_URL }) {
                               id="studentId"
                               value={studentId}
                               onChange={(e) => setStudentId(e.target.value)}
-                              className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                              disabled={activeStudentId ? true : false}
+                              className={`mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md ${
+                                activeStudentId ? "bg-gray-300" : ""
+                              }`}
                             />
                           </div>
                           <div className="col-span-6 text-red-500">{alert}</div>
@@ -132,7 +140,7 @@ export default function Profile({ _session, _data, API_URL }) {
 
 export async function getServerSideProps(ctx) {
   const _session = await getSession(ctx);
-  const res = await fetch(getApiUrl("/users/" + _session?.user?._id), {
+  const res = await fetch(BACKEND_URL + ("/users/" + _session?.user?._id), {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -143,11 +151,11 @@ export async function getServerSideProps(ctx) {
     const _data = await res.json();
     if (_data.success) {
       return {
-        props: { _session, _data, API_URL: getApiUrl() },
+        props: { _session, _data },
       };
     } else {
       return {
-        props: { _session, _data: null, API_URL: getApiUrl() },
+        props: { _session, _data: null },
       };
     }
   } else {

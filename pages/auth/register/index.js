@@ -2,10 +2,10 @@ import Link from "next/link";
 import { useState } from "react";
 import validator from "email-validator";
 import { useRouter } from "next/router";
-import { getApiUrl } from "../../../lib/Utils";
+import { BACKEND_URL } from "../../../lib/Utils";
 import { signIn, getSession } from "next-auth/react";
 
-export default function Register({ API_URL }) {
+export default function Register() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,7 +21,7 @@ export default function Register({ API_URL }) {
     } else if (password !== confirmPassword) {
       setAlert("Passwords are not the same!");
     } else {
-      fetch(API_URL + "/auth/register", {
+      fetch(BACKEND_URL + "/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -35,9 +35,11 @@ export default function Register({ API_URL }) {
           } else {
             setAlert(data.message);
             router.push("/auth/login");
+            return;
           }
         })
         .catch((error) => {
+          setAlert(error.toString());
           console.error("Error:", error);
         });
     }
@@ -189,7 +191,7 @@ export default function Register({ API_URL }) {
 
 export async function getServerSideProps(ctx) {
   const _session = await getSession(ctx);
-  const res = await fetch(getApiUrl("/users/" + _session?.user?._id), {
+  const res = await fetch(BACKEND_URL + "/users/" + _session?.user?._id, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -205,7 +207,7 @@ export async function getServerSideProps(ctx) {
     };
   } else {
     return {
-      props: { API_URL: getApiUrl() },
+      props: {},
     };
   }
 }

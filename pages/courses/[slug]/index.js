@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getSession } from "next-auth/react";
-import { getApiUrl } from "../../../lib/Utils";
+import { BACKEND_URL } from "../../../lib/Utils";
 import axios from "axios";
 export default function CoursePage({ _data }) {
   return (
@@ -69,7 +69,7 @@ export default function CoursePage({ _data }) {
 export async function getServerSideProps(ctx) {
   const _session = await getSession(ctx);
 
-  const res = await fetch(getApiUrl("/courses/" + ctx.query.slug), {
+  const res = await fetch(BACKEND_URL + ("/courses/" + ctx.query.slug), {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -80,7 +80,7 @@ export async function getServerSideProps(ctx) {
     const _data = await res.json();
     if (_data.success) {
       const invite = await axios.get(
-        `${getApiUrl()}/courses/${_data.course._id}/invitation`,
+        `${BACKEND_URL}/courses/${_data.course._id}/invitation`,
         {
           headers: {
             Authorization: `Bearer ${_session?.jwt}`,

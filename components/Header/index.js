@@ -3,9 +3,16 @@ import Link from "next/link";
 import { Fragment, memo } from "react";
 import { Popover, Menu, Transition } from "@headlessui/react";
 import { MenuIcon } from "@heroicons/react/outline";
+import { useRouter } from "next/router";
 
 function Header() {
   const { data: session } = useSession();
+  const router = useRouter();
+  function handleSignout() {
+    signOut({ redirect: false });
+    router.push("/auth/login");
+    return;
+  }
   return (
     <Popover className="sticky top-0 bg-white z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -77,15 +84,12 @@ function Header() {
                     </Menu.Item>
                     <Menu.Item>
                       {({ active }) => (
-                        <a
-                          href="#"
-                          className="hover:bg-gray-100 block px-4 py-2 text-sm text-gray-700"
-                          onClick={() =>
-                            signOut({ redirect: true, callbackUrl: "/" })
-                          }
+                        <div
+                          className="hover:bg-gray-100 block px-4 py-2 text-sm text-gray-700 cursor-pointer"
+                          onClick={() => handleSignout()}
                         >
                           Logout
-                        </a>
+                        </div>
                       )}
                     </Menu.Item>
                   </Menu.Items>
@@ -163,9 +167,7 @@ function Header() {
                         </div>
                       </Link>
                       <div
-                        onClick={() =>
-                          signOut({ redirect: true, callbackUrl: "/" })
-                        }
+                        onClick={() => handleSignout()}
                         className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"
                       >
                         Logout

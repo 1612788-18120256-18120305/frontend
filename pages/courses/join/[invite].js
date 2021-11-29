@@ -1,6 +1,6 @@
 import React from "react";
 import axios from "axios";
-import { getApiUrl } from "../../../lib/Utils";
+import { BACKEND_URL } from "../../../lib/Utils";
 import { getSession } from "next-auth/react";
 
 const JoinCourse = ({ success, error, course }) => {
@@ -16,7 +16,7 @@ export const getServerSideProps = async (ctx) => {
   const inviteCode = ctx.query.invite;
   try {
     const joinCourse = await axios.get(
-      `${getApiUrl()}/courses/join/${inviteCode}`,
+      `${BACKEND_URL}/courses/join/${inviteCode}`,
       {
         headers: {
           "Content-Type": "application/json",

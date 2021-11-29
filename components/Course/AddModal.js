@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from 'next/router'
 
-export default function AddModal({ API_URL }) {
+export default function AddModal({ BACKEND_URL }) {
   const router = useRouter()
   const { data: session, status } = useSession();
   const [alert, setAlert] = useState("");
@@ -22,7 +22,7 @@ export default function AddModal({ API_URL }) {
     if (name == "") {
       setAlert("Name is required");
     } else {
-      fetch(API_URL + "/courses/store", {
+      fetch(BACKEND_URL + "/courses/store", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

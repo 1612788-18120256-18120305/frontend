@@ -1,23 +1,24 @@
-import { getCsrfToken } from "next-auth/react";
-import { signIn, getSession } from "next-auth/react";
-import { getApiUrl } from "../../../lib/Utils";
+import { signIn, getSession, getCsrfToken } from "next-auth/react";
+import { BACKEND_URL } from "../../../lib/Utils";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import validator from "email-validator";
+import { useRouter } from "next/router";
 
-export default function Login({ API_URL, csrfToken }) {
+export default function Login({ csrfToken }) {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [alert, setAlert] = useState("");
 
-  function handleSubmit() {
+  async function handleSubmit() {
     setAlert("");
     if (!validator.validate(email)) {
       setAlert("Invalid email!");
     } else if (password == "") {
       setAlert("Password required");
     } else {
-      fetch(API_URL + "/auth/login", {
+      fetch(BACKEND_URL + "/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -28,13 +29,25 @@ export default function Login({ API_URL, csrfToken }) {
         .then((data) => {
           if (data.success) {
             setAlert("");
-            signIn("credentials", { email, password });
+            signIn("credentials", {
+              redirect: false,
+              email,
+              password,
+            })
+              .then((res) => {
+                router.push("/courses");
+                return;
+              })
+              .catch((error) => {
+                setAlert(error.toString());
+                console.error("Error:", error);
+              });
           } else {
             setAlert(data.message);
           }
         })
         .catch((error) => {
-          setAlert("Error!");
+          setAlert(error.toString());
           console.error("Error:", error);
         });
     }
@@ -169,7 +182,7 @@ export default function Login({ API_URL, csrfToken }) {
 
 export async function getServerSideProps(ctx) {
   const _session = await getSession(ctx);
-  const res = await fetch(getApiUrl("/users/" + _session?.user?._id), {
+  const res = await fetch(BACKEND_URL + "/users/" + _session?.user?._id, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -185,7 +198,7 @@ export async function getServerSideProps(ctx) {
     };
   } else {
     return {
-      props: { API_URL: getApiUrl(), csrfToken: await getCsrfToken(ctx) },
+      props: { csrfToken: await getCsrfToken(ctx) },
     };
   }
 }
