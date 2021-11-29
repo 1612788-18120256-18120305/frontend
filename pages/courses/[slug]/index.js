@@ -2,11 +2,15 @@ import Link from "next/link";
 import { getSession } from "next-auth/react";
 import { BACKEND_URL } from "../../../lib/Utils";
 import axios from "axios";
+import BC from "../../../components/Course/BC";
 export default function CoursePage({ _data }) {
   return (
     <>
       {_data && (
-        <>
+        <div>
+          <div className="flex justify-center mb-2">
+            <BC _data={_data} active="/" />
+          </div>
           <div className="flex justify-center">
             <div className="relative">
               <img
@@ -94,18 +98,18 @@ export default function CoursePage({ _data }) {
                   </div>
                 </div>
               )}
-              <div className="card shadow-lg w-64 bg-gray-300 my-3">
+              {/* <div className="card shadow-lg w-64 bg-gray-300 my-3">
                 <div className="card-body">
                   <div className="flex font-bold">
                     <Link href={`/courses/${_data.course.slug}/users`}>
-                      Mọi người
+                      Users
                     </Link>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
-        </>
+        </div>
       )}
     </>
   );
