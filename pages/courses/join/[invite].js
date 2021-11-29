@@ -7,31 +7,24 @@ const JoinCourse = ({ success, error, course }) => {
   if (success) {
     return <div>Success!</div>;
   } else {
-    return <div>Error: {error}</div>;
+    return <div className="flex justify-center">Error: {error}</div>;
   }
 };
 
 export const getServerSideProps = async (ctx) => {
   const _session = await getSession(ctx);
-  const inviteCode = ctx.query.invite;
+  const code = ctx.query.invite;
   try {
-    const joinCourse = await axios.get(
-      `${BACKEND_URL}/courses/join/${inviteCode}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${_session?.jwt}`,
-        },
-      }
-    );
-    if (joinCourse.data.success) {
+    const res = await axios.get(`${BACKEND_URL}/courses/join/${code}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${_session?.jwt}`,
+      },
+    });
+    if (res.data.success) {
       return {
-        // props: {
-        //   success: true,
-        //   course: joinCourse.data.course,
-        // },
         redirect: {
-          destination: `/courses/${joinCourse.data.course.slug}`,
+          destination: `/courses/${res.data.course.slug}`,
           permanent: false,
         },
       };
@@ -39,13 +32,17 @@ export const getServerSideProps = async (ctx) => {
       return {
         props: {
           success: false,
-          error: joinCourse.data.message,
+          error: res.data.message,
         },
       };
     }
   } catch (error) {
-    console.log(error);
-    return { props: { success: false, error: error } };
+    return {
+      redirect: {
+        destination: "/auth/login",
+        permanent: false,
+      },
+    };
   }
 };
 
