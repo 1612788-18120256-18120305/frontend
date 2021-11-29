@@ -4,6 +4,7 @@ import { BACKEND_URL } from "../../../lib/Utils";
 import axios from "axios";
 import BC from "../../../components/Course/BC";
 export default function CoursePage({ _data }) {
+  const { assignments } = _data.course;
   return (
     <>
       {_data && (
@@ -18,12 +19,8 @@ export default function CoursePage({ _data }) {
                 src="https://www.gstatic.com/classroom/themes/img_backtoschool.jpg"
               />
               <div className="absolute bottom-1 left-1 md:bottom-5 md:left-5 text-white">
-                <div className="text-md md:text-4xl font-bold">
-                  {_data.course.name}
-                </div>
-                <div className="text-md md:text-xl">
-                  {_data.course.description}
-                </div>
+                <div className="text-md md:text-4xl font-bold">{_data.course.name}</div>
+                <div className="text-md md:text-xl">{_data.course.description}</div>
               </div>
               <div className="absolute bottom-1 right-1 md:bottom-5 md:right-5">
                 <svg
@@ -100,6 +97,31 @@ export default function CoursePage({ _data }) {
               )}
               {/* <div className="card shadow-lg w-64 bg-gray-300 my-3">
                 <div className="card-body">
+                  <div className="flex justify-center font-bold">
+                    <Link href={`/courses/${_data.course.slug}/users`}>Mọi người</Link>
+                  </div>
+                </div>
+              </div>
+              <div className="card shadow-lg w-64 bg-gray-300 my-3">
+                <div className="card-body">
+                  <div className="flex flex-col justify-center">
+                    <h3 className="font-bold">Grade structure</h3>
+                    <ul>
+                      {assignments.length > 0 ? (
+                        assignments.map((item) => (
+                          <li key={item._id}>
+                            {item.name}: <span>{item.point}</span>
+                          </li>
+                        ))
+                      ) : (
+                        <span>Không có</span>
+                      )}
+                    </ul>
+                    {_data.course.joinId && (
+                      <Link href={`/courses/${_data.course.slug}/grade-structure`}>
+                        <a className="mt-3 btn btn-primary w-1/2 mx-auto">Edit</a>
+                      </Link>
+                    )}
                   <div className="flex font-bold">
                     <Link href={`/courses/${_data.course.slug}/users`}>
                       Users
@@ -117,25 +139,21 @@ export default function CoursePage({ _data }) {
 
 export async function getServerSideProps(ctx) {
   const _session = await getSession(ctx);
-
   const res = await fetch(BACKEND_URL + "/courses/" + ctx.query.slug, {
     method: "GET",
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       Authorization: `Bearer ${_session?.jwt}`,
     },
   });
   if (res.ok) {
     const _data = await res.json();
     if (_data.success) {
-      const invite = await axios.get(
-        `${BACKEND_URL}/courses/${_data.course._id}/invitation`,
-        {
-          headers: {
-            Authorization: `Bearer ${_session?.jwt}`,
-          },
-        }
-      );
+      const invite = await axios.get(`${BACKEND_URL}/courses/${_data.course._id}/invitation`, {
+        headers: {
+          Authorization: `Bearer ${_session?.jwt}`,
+        },
+      });
       if (invite.data.success) {
         _data.course.joinId = invite.data.invitation.inviteCode;
       } else {
@@ -149,7 +167,7 @@ export async function getServerSideProps(ctx) {
       return {
         redirect: {
           permanent: false,
-          destination: "/courses",
+          destination: '/courses',
         },
       };
     }
@@ -157,7 +175,7 @@ export async function getServerSideProps(ctx) {
     return {
       redirect: {
         permanent: false,
-        destination: "/auth/login",
+        destination: '/auth/login',
       },
     };
   }
