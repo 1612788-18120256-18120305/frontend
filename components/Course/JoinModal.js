@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from 'next/router'
+import { useRouter } from "next/router";
 
-export default function AddModal({ BACKEND_URL }) {
-  const router = useRouter()
+export default function JoinModal({ BACKEND_URL }) {
+  const router = useRouter();
   const { data: session, status } = useSession();
   const [alert, setAlert] = useState("");
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+  const [code, setCode] = useState("");
   const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
@@ -19,24 +18,27 @@ export default function AddModal({ BACKEND_URL }) {
 
   const handleSubmit = () => {
     setAlert("");
-    if (name == "") {
-      setAlert("Name is required");
+    if (code.length != 8) {
+      setAlert("Invalid code");
+      return;
     } else {
-      fetch(BACKEND_URL + "/courses/store", {
-        method: "POST",
+      fetch(BACKEND_URL + "/courses/join/" + code, {
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${session?.jwt}`,
         },
-        body: JSON.stringify({ name, description }),
       })
         .then((response) => response.json())
         .then((data) => {
-          // console.log(data, "Added Course");
-          setName("");
-          setDescription("");
-          handleClose();
-          router.push("/courses")
+          if (data.success) {
+            setCode("");
+            handleClose();
+            router.push("/courses/" + data.course.slug);
+            return;
+          } else {
+            setAlert(data.message);
+          }
         })
         .catch((error) => {
           console.error("Error:", error);
@@ -75,30 +77,21 @@ export default function AddModal({ BACKEND_URL }) {
                 </svg>
               </div>
               <h1 className="text-gray-800 font-lg font-bold tracking-normal leading-tight mb-4">
-                Add Course
+                Join Course
               </h1>
 
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text">Name</span>
+                  <span className="label-text">Code</span>
                   <div className="text-red-500">{alert}</div>
                 </label>
                 <input
                   type="text"
                   placeholder="Name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
                   className="input input-info input-bordered"
                 />
-                <label className="label">
-                  <span className="label-text ">Description</span>
-                </label>
-                <textarea
-                  className="textarea h-24 textarea-bordered textarea-info"
-                  placeholder="Description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                ></textarea>
               </div>
 
               <div className="mt-5 flex items-center justify-start w-full">
@@ -143,7 +136,7 @@ export default function AddModal({ BACKEND_URL }) {
       )}
 
       <button className="btn btn-accent" onClick={handleClickOpen}>
-        Create course
+        Join Course
       </button>
     </div>
   );

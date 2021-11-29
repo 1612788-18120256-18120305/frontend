@@ -15,7 +15,7 @@ export default function CourseCard({ course }) {
           <div className="cursor-pointer hover:text-red-500">
             <h2 className="card-title">
               {course.name}
-              <div className="badge mx-2 badge-secondary">NEW</div>
+              {/* <div className="badge mx-2 badge-secondary">NEW</div> */}
             </h2>
             <p>{course.description}</p>
           </div>
@@ -23,11 +23,13 @@ export default function CourseCard({ course }) {
 
         <Link href={`/courses/${course.slug}`}>
           <p className="cursor-pointer hover:text-red-500">
-            <a>{course.owner.name}</a>
+            <a>Teacher: {course.owner.name}</a>
           </p>
         </Link>
         <div className="justify-end card-actions">
-          <button className="btn btn-secondary">More info</button>
+          <Link href={`/courses/${course.slug}`}>
+            <button className="btn btn-secondary">More info</button>
+          </Link>
         </div>
       </div>
     </div>

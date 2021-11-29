@@ -8,7 +8,7 @@ import { useRouter } from "next/router";
 function Header() {
   const { data: session } = useSession();
   const router = useRouter();
-  function handleSignout() {
+  function handleSignOut() {
     signOut({ redirect: false });
     router.push("/auth/login");
     return;
@@ -89,7 +89,7 @@ function Header() {
                         {({ active }) => (
                           <div
                             className="hover:bg-gray-100 block px-4 py-2 text-sm text-gray-700 cursor-pointer"
-                            onClick={() => handleSignout()}
+                            onClick={() => handleSignOut()}
                           >
                             Logout
                           </div>

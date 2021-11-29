@@ -44,14 +44,59 @@ export default function CoursePage({ _data }) {
               {_data.course.joinId && (
                 <div className="card shadow-lg w-64 bg-gray-300">
                   <div className="card-body">
-                    <h2 className="card-title">Mã lớp</h2>
-                    <p>{_data.course.joinId}</p>
+                    <h2 className="card-title">Classroom Code</h2>
+                    <div className="flex justify-between item-center">
+                      <p className="text-blue-500 text-2xl">
+                        {_data.course.joinId}
+                      </p>
+                      <svg
+                        onClick={() => {
+                          navigator.clipboard.writeText(_data.course.joinId);
+                        }}
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-8 w-8 cursor-pointer"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                        />
+                      </svg>
+                    </div>
+                    <div className="flex justify-between item-center pt-3">
+                      <p className="text-2xl">Join Link</p>
+                      <svg
+                        onClick={() => {
+                          navigator.clipboard.writeText(
+                            process.env.NEXT_PUBLIC_FRONTEND_URL +
+                              "/courses/join/" +
+                              _data.course.joinId
+                          );
+                        }}
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-8 w-8 cursor-pointer"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                        />
+                      </svg>
+                    </div>
                   </div>
                 </div>
               )}
               <div className="card shadow-lg w-64 bg-gray-300 my-3">
                 <div className="card-body">
-                  <div className="flex justify-center font-bold">
+                  <div className="flex font-bold">
                     <Link href={`/courses/${_data.course.slug}/users`}>
                       Mọi người
                     </Link>
@@ -69,7 +114,7 @@ export default function CoursePage({ _data }) {
 export async function getServerSideProps(ctx) {
   const _session = await getSession(ctx);
 
-  const res = await fetch(BACKEND_URL + ("/courses/" + ctx.query.slug), {
+  const res = await fetch(BACKEND_URL + "/courses/" + ctx.query.slug, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
