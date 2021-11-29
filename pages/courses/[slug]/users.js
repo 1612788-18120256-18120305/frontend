@@ -3,12 +3,18 @@ import { BACKEND_URL } from "../../../lib/Utils";
 import { useState } from "react";
 import InviteModal from "../../../components/Course/InviteModal";
 import axios from "axios";
+import BC from "../../../components/Course/BC";
 
 export default function Users({ _session, _data }) {
+  const [isTeacher, setIsTeacher] = useState(
+    _session.user._id == _data.course.owner._id ||
+      JSON.stringify(_data.course.teachers).includes(_session.user._id)
+  );
   const [showInviteTeacher, setShowInviteTeacher] = useState(false);
   const [showInviteStudent, setShowInviteStudent] = useState(false);
   const [inviteError, setInviteError] = useState(null);
   const [email, setEmail] = useState("");
+
   async function handleInviteTeacherSubmit() {
     const invitation = await axios.post(
       `${BACKEND_URL}/courses/invite`,
@@ -118,79 +124,88 @@ export default function Users({ _session, _data }) {
         />
       )}
       {_data && (
-        <div className="flex justify-center">
-          <div className="w-full md:w-3/5">
-            <div>
-              <div className="border-solid border-b-2 border-blue-500 p-2 flex justify-between items-center">
-                <div className="text-3xl">Giáo Viên</div>
-                <button onClick={() => setShowInviteTeacher(true)}>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+        <>
+          <div className="flex justify-center mb-2">
+            <BC _data={_data} active="users" />
+          </div>
+          <div className="flex justify-center">
+            <div className="w-full md:w-3/5">
+              <div>
+                <div className="border-solid border-b-2 border-blue-500 p-2 flex justify-between items-center">
+                  <div className="text-3xl">Giáo Viên</div>
+                  {isTeacher && (
+                    <button onClick={() => setShowInviteTeacher(true)}>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-6 w-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                        />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+                {_data.course.teachers.map((teacher, key) => (
+                  <div className="p-2 flex items-center" key={key}>
+                    <img
+                      className="rounded-full h-12"
+                      src="https://lh3.googleusercontent.com/a/default-user=s75-c"
                     />
-                  </svg>
-                </button>
+                    <div className="p-2">
+                      {teacher.name} ({teacher.email})
+                    </div>
+                  </div>
+                ))}
               </div>
-              {_data.course.teachers.map((teacher, key) => (
-                <div className="p-2 flex items-center" key={key}>
-                  <img
-                    className="rounded-full h-12"
-                    src="https://lh3.googleusercontent.com/a/default-user=s75-c"
-                  />
-                  <div className="p-2">
-                    {teacher.name} ({teacher.email})
+              <div className="py-2">
+                <div className="border-solid border-b-2 border-blue-500 p-2 flex justify-between items-center">
+                  <div className="text-3xl">Học Sinh</div>
+                  <div className="flex justify-center items-center">
+                    <div className="text-3xl px-2">
+                      {_data.course.students.length} sinh viên
+                    </div>
+                    {isTeacher && (
+                      <button onClick={() => setShowInviteStudent(true)}>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-6 w-6"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                          />
+                        </svg>
+                      </button>
+                    )}
                   </div>
                 </div>
-              ))}
-            </div>
-            <div className="py-2">
-              <div className="border-solid border-b-2 border-blue-500 p-2 flex justify-between items-center">
-                <div className="text-3xl">Học Sinh</div>
-                <div className="flex justify-center items-center">
-                  <div className="text-3xl px-2">
-                    {_data.course.students.length} sinh viên
+                {_data.course.students.map((student, key) => (
+                  <div className="p-2 flex items-center" key={key}>
+                    <img
+                      className="rounded-full h-12"
+                      src="https://lh3.googleusercontent.com/a/default-user=s75-c"
+                    />
+                    <div className="p-2">
+                      {student.name} ({student.email})
+                    </div>
                   </div>
-                  <button onClick={() => setShowInviteStudent(true)}>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-                      />
-                    </svg>
-                  </button>
-                </div>
+                ))}
               </div>
-              {_data.course.students.map((student, key) => (
-                <div className="p-2 flex items-center" key={key}>
-                  <img
-                    className="rounded-full h-12"
-                    src="https://lh3.googleusercontent.com/a/default-user=s75-c"
-                  />
-                  <div className="p-2">
-                    {student.name} ({student.email})
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
-        </div>
+        </>
       )}
     </>
   );

@@ -2,6 +2,7 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import AddModal from "../../components/Course/AddModal";
+import JoinModal from "../../components/Course/JoinModal";
 import CourseCard from "../../components/Course/Card";
 import { getSession } from "next-auth/react";
 import { BACKEND_URL } from "../../lib/Utils";
@@ -12,14 +13,13 @@ export default function CoursesPage({ _session, _data }) {
       {_session && (
         <div className="flex justify-center items-center">
           <AddModal BACKEND_URL={BACKEND_URL} />
-          <Link href="/courses/join">
-            <a className="btn btn-accent ml-3">Tham gia</a>
-          </Link>
+          <div className="ml-3"/>
+          <JoinModal BACKEND_URL={BACKEND_URL} />
         </div>
       )}
       <div className="py-10 sm:px-20 flex justify-center relative">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
-          {_data?.courses?.map((course, key) => (
+          {_data?.courses?.reverse().map((course, key) => (
             <CourseCard key={key} course={course} />
           ))}
         </div>

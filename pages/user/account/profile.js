@@ -74,7 +74,7 @@ export default function Profile({ _session, _data }) {
                               value={email}
                               onChange={(e) => setEmail(e.target.value)}
                               disabled
-                              className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-gray-300"
+                              className="h-8 p-2 mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-gray-300"
                             />
                           </div>
 
@@ -91,7 +91,7 @@ export default function Profile({ _session, _data }) {
                               id="name"
                               value={name}
                               onChange={(e) => setName(e.target.value)}
-                              className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                              className="h-8 p-2 mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                             />
                           </div>
 
@@ -109,7 +109,7 @@ export default function Profile({ _session, _data }) {
                               value={studentId}
                               onChange={(e) => setStudentId(e.target.value)}
                               disabled={activeStudentId ? true : false}
-                              className={`mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md ${
+                              className={`h-8 p-2 mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md ${
                                 activeStudentId ? "bg-gray-300" : ""
                               }`}
                             />
