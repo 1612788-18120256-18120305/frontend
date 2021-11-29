@@ -1,5 +1,5 @@
-import Document, { Html, Head, Main, NextScript } from "next/document";
-import { resetServerContext } from "react-beautiful-dnd";
+import Document, { Html, Head, Main, NextScript } from 'next/document';
+import { resetServerContext } from 'react-beautiful-dnd';
 
 class MyDocument extends Document {
   static async getInitialProps(ctx) {
