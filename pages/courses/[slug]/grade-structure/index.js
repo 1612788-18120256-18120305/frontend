@@ -69,7 +69,7 @@ function GradeStructure({ listAssignment, _session, slug, course, _data }) {
   }
 
   async function handleOnDrapEnd(result) {
-    console.log(result);
+    if (!result.destination) return;
     const items = Array.from(assignments);
     const [reorderedItems] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItems);
