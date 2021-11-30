@@ -3,11 +3,13 @@ import { BACKEND_URL } from '../../../../lib/Utils';
 import { getSession } from 'next-auth/react';
 import { DragDropContext, Droppable, Draggable } from '../../../../components/common/dnd_component';
 import axios from 'axios';
+import BC from '../../../../components/Course/BC';
 
-function GradeStructure({ listAssignment, _session, slug, course }) {
+function GradeStructure({ listAssignment, _session, slug, course, _data }) {
   const [title, setTitle] = useState('');
   const [detail, setDetail] = useState('');
   const [assignments, setAssignments] = useState(listAssignment);
+  const [disabled, setDisabled] = useState(true);
 
   function handleChange(e) {
     const name = e.target.name;
@@ -37,6 +39,35 @@ function GradeStructure({ listAssignment, _session, slug, course }) {
     setDetail('');
   }
 
+  async function handleEdit(item, index) {
+    assignments[index].canEdit = assignments[index].canEdit === false ? true : false;
+    setAssignments([...assignments]);
+
+    console.log(assignments[index].canEdit);
+    if (assignments[index].canEdit == true) {
+      const res = await axios.patch(
+        BACKEND_URL + `/courses/${slug}/assignment/${item._id}`,
+        { name: assignments[index].name, point: assignments[index].point },
+        {
+          headers: {
+            Authorization: `Bearer ${_session?.jwt}`,
+          },
+        }
+      );
+      console.log(res);
+    }
+  }
+
+  async function handleDelete(item, index) {
+    const res = await axios.delete(BACKEND_URL + `/courses/${slug}/assignment/${item._id}`, {
+      headers: {
+        Authorization: `Bearer ${_session?.jwt}`,
+      },
+    });
+    assignments.splice(index, 1);
+    setAssignments([...assignments]);
+  }
+
   async function handleOnDrapEnd(result) {
     console.log(result);
     const items = Array.from(assignments);
@@ -56,8 +87,11 @@ function GradeStructure({ listAssignment, _session, slug, course }) {
   }
 
   return (
-    <div className="mt-4 w-2/5 mx-auto">
-      <div className="font-semibold text-center py-6 bordered">
+    <div className="xl:w-2/5 xl:mx-auto">
+      <div className="flex justify-center mb-2">
+        <BC _data={_data} active="grade-structure" />
+      </div>
+      <div className="font-semibold text-center pb-2 bordered">
         <h2 className="text-3xl text-red-500">Grade Structure</h2>
       </div>
       <DragDropContext onDragEnd={handleOnDrapEnd}>
@@ -86,9 +120,16 @@ function GradeStructure({ listAssignment, _session, slug, course }) {
                           py-2
                           focus:outline-none focus:border-blue-400"
                           value={item.name}
-                          disabled
+                          onChange={(e) => {
+                            assignments[index].name = e.target.value;
+                            setAssignments([...assignments]);
+                          }}
+                          disabled={item.canEdit == undefined ? true : item.canEdit}
                         />
-                        <button className="p-1 ml-2 bg-blue-500 text-gray-100 text-lg rounded-lg focus:border-4 border-blue-300 mb-2">
+                        <button
+                          onClick={() => handleEdit(item, index)}
+                          className="p-1 ml-2 bg-blue-500 text-gray-100 text-lg rounded-lg focus:border-4 border-blue-300 mb-2"
+                        >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="h-6 w-6"
@@ -118,9 +159,16 @@ function GradeStructure({ listAssignment, _session, slug, course }) {
                           py-2
                           focus:outline-none focus:border-blue-400"
                           value={item.point}
-                          disabled
+                          onChange={(e) => {
+                            assignments[index].point = e.target.value;
+                            setAssignments([...assignments]);
+                          }}
+                          disabled={item.canEdit == undefined ? true : item.canEdit}
                         />
-                        <button className="p-1 ml-2 bg-red-500 text-gray-100 text-lg rounded-lg focus:border-4 border-red-300">
+                        <button
+                          onClick={() => handleDelete(item, index)}
+                          className="p-1 ml-2 bg-red-500 text-gray-100 text-lg rounded-lg focus:border-4 border-red-300"
+                        >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="h-6 w-6"
@@ -206,25 +254,43 @@ export const getServerSideProps = async (context) => {
     },
   });
 
-  const data = await res.json();
+  if (res.ok) {
+    const _data = await res.json();
+    if (_data.success) {
+      // console.log(_data.course.teachers);
+      // console.log(_session.user._id);
 
-  console.log(data.course.teachers);
-  console.log(_session.user._id);
+      const temp = _data.course.teachers.map((item) => item._id);
 
-  const temp = data.course.teachers.map((item) => item._id);
+      if (!temp.includes(_session.user._id)) {
+        return {
+          notFound: true,
+        };
+      }
 
-  if (!temp.includes(_session.user._id)) {
+      return {
+        props: {
+          course: _data.course,
+          listAssignment: _data.course.assignments,
+          slug: context.query.slug,
+          _session,
+          _data,
+        },
+      };
+    } else {
+      return {
+        redirect: {
+          permanent: false,
+          destination: '/courses',
+        },
+      };
+    }
+  } else {
     return {
-      notFound: true,
+      redirect: {
+        permanent: false,
+        destination: '/auth/login',
+      },
     };
   }
-
-  return {
-    props: {
-      course: data.course,
-      listAssignment: data.course.assignments,
-      _session: _session,
-      slug: context.query.slug,
-    },
-  };
 };

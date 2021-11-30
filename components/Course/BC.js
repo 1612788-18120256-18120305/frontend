@@ -12,6 +12,11 @@ export default function BC({ _data, active }) {
           Users
         </button>
       </Link>
+      <Link href={`/courses/${_data.course.slug}/grade-structure`}>
+        <button className={`btn ${active == "grade-structure" && "btn-active"}`}>
+          Grade Structure
+        </button>
+      </Link>
     </div>
   );
 }
