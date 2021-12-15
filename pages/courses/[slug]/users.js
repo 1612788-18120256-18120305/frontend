@@ -1,9 +1,9 @@
-import { getSession } from "next-auth/react";
-import { BACKEND_URL } from "../../../lib/Utils";
-import { useState } from "react";
-import InviteModal from "../../../components/Course/InviteModal";
-import axios from "axios";
-import BC from "../../../components/Course/BC";
+import { getSession } from 'next-auth/react';
+import { BACKEND_URL } from '../../../lib/Utils';
+import { useState } from 'react';
+import InviteModal from '../../../components/Course/InviteModal';
+import axios from 'axios';
+import BC from '../../../components/Course/BC';
 
 export default function Users({ _session, _data }) {
   const [isTeacher, setIsTeacher] = useState(
@@ -13,7 +13,7 @@ export default function Users({ _session, _data }) {
   const [showInviteTeacher, setShowInviteTeacher] = useState(false);
   const [showInviteStudent, setShowInviteStudent] = useState(false);
   const [inviteError, setInviteError] = useState(null);
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
 
   async function handleInviteTeacherSubmit() {
     const invitation = await axios.post(
@@ -31,7 +31,7 @@ export default function Users({ _session, _data }) {
     );
     if (invitation.data.success) {
       setShowInviteTeacher(false);
-      setEmail("");
+      setEmail('');
     } else {
       setInviteError(invitation.data.message);
     }
@@ -53,7 +53,7 @@ export default function Users({ _session, _data }) {
     );
     if (invitation.data.success) {
       setShowInviteStudent(false);
-      setEmail("");
+      setEmail('');
     } else {
       setInviteError(invitation.data.message);
     }
@@ -168,9 +168,7 @@ export default function Users({ _session, _data }) {
                 <div className="border-solid border-b-2 border-blue-500 p-2 flex justify-between items-center">
                   <div className="text-3xl">Học Sinh</div>
                   <div className="flex justify-center items-center">
-                    <div className="text-3xl px-2">
-                      {_data.course.students.length} sinh viên
-                    </div>
+                    <div className="text-3xl px-2">{_data.course.students.length} sinh viên</div>
                     {isTeacher && (
                       <button onClick={() => setShowInviteStudent(true)}>
                         <svg
@@ -191,11 +189,18 @@ export default function Users({ _session, _data }) {
                     )}
                   </div>
                 </div>
+                <div className="flex justify-center mt-4">
+                  <a href={'/template.csv'} className="btn btn-primary mr-4" download="Template">
+                    Download CSV
+                  </a>
+                  <a className="btn btn-secondary">Import CSV</a>
+                </div>
                 {_data.course.students.map((student, key) => (
                   <div className="p-2 flex items-center" key={key}>
                     <img
                       className="rounded-full h-12"
                       src="https://lh3.googleusercontent.com/a/default-user=s75-c"
+                      alt="a"
                     />
                     <div className="p-2">
                       {student.name} ({student.email})
@@ -214,10 +219,10 @@ export default function Users({ _session, _data }) {
 export async function getServerSideProps(ctx) {
   const _session = await getSession(ctx);
 
-  const res = await fetch(BACKEND_URL + ("/courses/" + ctx.query.slug), {
-    method: "GET",
+  const res = await fetch(BACKEND_URL + ('/courses/' + ctx.query.slug), {
+    method: 'GET',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       Authorization: `Bearer ${_session?.jwt}`,
     },
   });
@@ -231,7 +236,7 @@ export async function getServerSideProps(ctx) {
       return {
         redirect: {
           permanent: false,
-          destination: "/courses",
+          destination: '/courses',
         },
       };
     }
@@ -239,7 +244,7 @@ export async function getServerSideProps(ctx) {
     return {
       redirect: {
         permanent: false,
-        destination: "/auth/login",
+        destination: '/auth/login',
       },
     };
   }
