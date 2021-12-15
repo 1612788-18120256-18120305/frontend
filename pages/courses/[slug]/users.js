@@ -5,6 +5,7 @@ import InviteModal from '../../../components/Course/InviteModal';
 import axios from 'axios';
 import BC from '../../../components/Course/BC';
 import Papa from 'papaparse';
+import Modal from '../../../components/Modal/Modal';
 
 export default function Users({ _session, _data }) {
   const [isTeacher, setIsTeacher] = useState(
@@ -17,6 +18,7 @@ export default function Users({ _session, _data }) {
   const [email, setEmail] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
   const [isFilePicked, setIsFilePicked] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   async function handleInviteTeacherSubmit() {
     const invitation = await axios.post(
@@ -237,6 +239,9 @@ export default function Users({ _session, _data }) {
                     <input type="file" onChange={changeHandler} />
                     <button className="btn">Submit</button>
                   </form>
+                  <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+                    Open modal
+                  </button>
                 </div>
                 {_data.course.students.map((student, key) => (
                   <div className="p-2 flex items-center" key={key}>
@@ -255,6 +260,11 @@ export default function Users({ _session, _data }) {
           </div>
         </>
       )}
+      <Modal show={showModal} onClose={() => setShowModal(false)}>
+        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugit, necessitatibus nemo!
+        Distinctio deserunt assumenda possimus odio officia commodi, ad iusto doloremque. Commodi
+        aut veritatis quos harum velit obcaecati fuga pariatur!
+      </Modal>
     </>
   );
 }
