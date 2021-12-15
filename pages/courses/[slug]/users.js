@@ -4,6 +4,7 @@ import { useState } from 'react';
 import InviteModal from '../../../components/Course/InviteModal';
 import axios from 'axios';
 import BC from '../../../components/Course/BC';
+import Papa from 'papaparse';
 
 export default function Users({ _session, _data }) {
   const [isTeacher, setIsTeacher] = useState(
@@ -14,6 +15,8 @@ export default function Users({ _session, _data }) {
   const [showInviteStudent, setShowInviteStudent] = useState(false);
   const [inviteError, setInviteError] = useState(null);
   const [email, setEmail] = useState('');
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [isFilePicked, setIsFilePicked] = useState(false);
 
   async function handleInviteTeacherSubmit() {
     const invitation = await axios.post(
@@ -107,6 +110,39 @@ export default function Users({ _session, _data }) {
       </button>
     </>
   );
+
+  function changeHandler(event) {
+    console.log(event.target);
+    setSelectedFile(event.target.files[0]);
+    setIsFilePicked(true);
+  }
+
+  function handleCSVFileSubmit(event) {
+    event.preventDefault();
+    Papa.parse(selectedFile, {
+      complete: async (result) => {
+        const data = result.data;
+        const studentIds = data.map((student) => {
+          return student.StudentId.toString();
+        });
+        console.log(studentIds);
+        const res = await axios.post(
+          `${BACKEND_URL}/courses/${_data.course.slug}/assignment/studentid`,
+          {
+            studentIds: studentIds,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${_session?.jwt}`,
+            },
+          }
+        );
+        console.log(res.data);
+      },
+      header: true,
+    });
+  }
+
   return (
     <>
       {showInviteTeacher && (
@@ -190,10 +226,17 @@ export default function Users({ _session, _data }) {
                   </div>
                 </div>
                 <div className="flex justify-center mt-4">
-                  <a href={'/template.csv'} className="btn btn-primary mr-4" download="Template">
+                  <a
+                    href={'/list_student_template.csv'}
+                    className="btn btn-primary mr-4"
+                    download="Template"
+                  >
                     Download CSV
                   </a>
-                  <a className="btn btn-secondary">Import CSV</a>
+                  <form onSubmit={handleCSVFileSubmit}>
+                    <input type="file" onChange={changeHandler} />
+                    <button className="btn">Submit</button>
+                  </form>
                 </div>
                 {_data.course.students.map((student, key) => (
                   <div className="p-2 flex items-center" key={key}>
