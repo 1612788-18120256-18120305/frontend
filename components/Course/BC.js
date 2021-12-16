@@ -15,6 +15,13 @@ export default function BC({ _data, active }) {
           </button>
         </Link>
       )}
+      {_data.course.joinId && (
+        <Link href={`/courses/${_data.course.slug}/grade-board`}>
+          <button className={`btn ${active == 'grade-board' && 'btn-active'}`}>
+            Grade Board
+          </button>
+        </Link>
+      )}
     </div>
   );
 }
