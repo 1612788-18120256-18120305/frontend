@@ -1,56 +1,17 @@
 import { getSession } from 'next-auth/react';
 import { BACKEND_URL } from '../../../../lib/Utils';
 import { useState } from 'react';
-import axios from 'axios';
 import BC from '../../../../components/Course/BC';
-import Papa from 'papaparse';
 import Alert from '../../../../components/Alert/Alert';
-import UploadModal from '../../../../components/Modal/UploadModal';
+import UploadStudentIdModal from '../../../../components/Modal/UploadStudentIdModal';
 
 export default function GradeBoard({ _session, _data }) {
   const [isTeacher, setIsTeacher] = useState(
     _session.user._id == _data.course.owner._id ||
       JSON.stringify(_data.course.teachers).includes(_session.user._id)
   );
-  const [selectedFile, setSelectedFile] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState({});
-
-  function handleCSVFileSubmit(event) {
-    event.preventDefault();
-    if (!selectedFile) {
-      return;
-    }
-    setLoading(true);
-    Papa.parse(selectedFile, {
-      complete: async (result) => {
-        const data = result.data;
-        const studentIds = data.map((student) => {
-          return student.StudentId.toString();
-        });
-        const res = await axios.post(
-          `${BACKEND_URL}/courses/${_data.course.slug}/assignment/studentid`,
-          {
-            studentIds: studentIds,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${_session?.jwt}`,
-            },
-          }
-        );
-        console.log(res.data);
-        setLoading(false);
-        setShowModal(false);
-        setAlert({ show: true, type: 'alert-success', message: 'Upload successfully!' });
-        setTimeout(() => {
-          setAlert({});
-        }, 3000);
-      },
-      header: true,
-    });
-  }
 
   return (
     <>
@@ -71,8 +32,18 @@ export default function GradeBoard({ _session, _data }) {
                     >
                       Download CSV
                     </a>
-                    <button className="btn btn-secondary" onClick={() => setShowModal(true)}>
+                    <button className="btn btn-secondary mr-4" onClick={() => setShowModal(true)}>
                       Upload CSV
+                    </button>
+                    <a
+                      href={'/list_student_template.csv'}
+                      className="btn btn-primary mr-4"
+                      download="Template"
+                    >
+                      Download grade template
+                    </a>
+                    <button className="btn btn-secondary" onClick={() => setShowModal(true)}>
+                      Upload grade
                     </button>
                   </div>
                 )}
@@ -81,13 +52,12 @@ export default function GradeBoard({ _session, _data }) {
           </div>
         </>
       )}
-      <UploadModal
-        selectedFile={selectedFile}
-        setSelectedFile={setSelectedFile}
+      <UploadStudentIdModal
         showModal={showModal}
         setShowModal={setShowModal}
-        handleCSVFileSubmit={handleCSVFileSubmit}
-        loading={loading}
+        setAlert={setAlert}
+        _data={_data}
+        _session={_session}
       />
       <Alert alert={alert} />
     </>
