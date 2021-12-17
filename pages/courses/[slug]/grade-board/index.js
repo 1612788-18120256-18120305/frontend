@@ -4,6 +4,7 @@ import { useState } from 'react';
 import BC from '../../../../components/Course/BC';
 import Alert from '../../../../components/Alert/Alert';
 import UploadStudentIdModal from '../../../../components/Modal/UploadStudentIdModal';
+import DownloadGradeTemplateButton from '../../../../components/Grade/DownloadGradeTemplateButton';
 
 export default function GradeBoard({ _session, _data }) {
   const [isTeacher, setIsTeacher] = useState(
@@ -35,13 +36,10 @@ export default function GradeBoard({ _session, _data }) {
                     <button className="btn btn-secondary mr-4" onClick={() => setShowModal(true)}>
                       Upload CSV
                     </button>
-                    <a
-                      href={'/list_student_template.csv'}
-                      className="btn btn-primary mr-4"
-                      download="Template"
-                    >
-                      Download grade template
-                    </a>
+                    <DownloadGradeTemplateButton
+                      studentIds={_data.course.studentIds}
+                      assignment={_data.course.assignments[0]}
+                    />
                     <button className="btn btn-secondary" onClick={() => setShowModal(true)}>
                       Upload grade
                     </button>
