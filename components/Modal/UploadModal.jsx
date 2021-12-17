@@ -8,16 +8,13 @@ const UploadModal = ({
   setShowModal,
   handleCSVFileSubmit,
   loading,
+  name,
 }) => {
   const [isFilePicked, setIsFilePicked] = useState(false);
 
   const modalActions = (
     <>
-      <button
-        type="submit"
-        form="uploadCsvForm"
-        className={`btn btn-primary ${loading ? 'loading' : ''}`}
-      >
+      <button type="submit" form={name} className={`btn btn-primary ${loading ? 'loading' : ''}`}>
         Upload
       </button>
       <a href="#" className="btn btn-outline btn-secondary" onClick={() => setShowModal(false)}>
@@ -34,7 +31,7 @@ const UploadModal = ({
 
   return (
     <Modal show={showModal} onClose={() => setShowModal(false)} actions={modalActions}>
-      <form id="uploadCsvForm" onSubmit={handleCSVFileSubmit}>
+      <form id={name} onSubmit={handleCSVFileSubmit}>
         <div className="flex justify-center mt-8">
           <div className="max-w-2xl rounded-lg shadow-xl bg-gray-50">
             <div className="m-4">

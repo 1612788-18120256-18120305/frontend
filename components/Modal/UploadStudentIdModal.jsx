@@ -51,6 +51,7 @@ const UploadStudentIdModal = ({ showModal, setShowModal, setAlert, _data, _sessi
       setShowModal={setShowModal}
       handleCSVFileSubmit={handleCSVFileSubmit}
       loading={loading}
+      name={'uploadStudentId'}
     />
   );
 };

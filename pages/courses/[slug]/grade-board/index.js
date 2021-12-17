@@ -4,6 +4,7 @@ import { useState } from 'react';
 import BC from '../../../../components/Course/BC';
 import Alert from '../../../../components/Alert/Alert';
 import UploadStudentIdModal from '../../../../components/Modal/UploadStudentIdModal';
+import UploadGradeModal from '../../../../components/Modal/UploadGradeModal';
 import DownloadGradeTemplateButton from '../../../../components/Grade/DownloadGradeTemplateButton';
 
 export default function GradeBoard({ _session, _data }) {
@@ -13,6 +14,8 @@ export default function GradeBoard({ _session, _data }) {
   );
   const [showModal, setShowModal] = useState(false);
   const [alert, setAlert] = useState({});
+
+  const [showGradeModal, setShowGradeModal] = useState(false);
 
   return (
     <>
@@ -40,7 +43,7 @@ export default function GradeBoard({ _session, _data }) {
                       studentIds={_data.course.studentIds}
                       assignment={_data.course.assignments[0]}
                     />
-                    <button className="btn btn-secondary" onClick={() => setShowModal(true)}>
+                    <button className="btn btn-secondary" onClick={() => setShowGradeModal(true)}>
                       Upload grade
                     </button>
                   </div>
@@ -53,6 +56,13 @@ export default function GradeBoard({ _session, _data }) {
       <UploadStudentIdModal
         showModal={showModal}
         setShowModal={setShowModal}
+        setAlert={setAlert}
+        _data={_data}
+        _session={_session}
+      />
+      <UploadGradeModal
+        showModal={showGradeModal}
+        setShowModal={setShowGradeModal}
         setAlert={setAlert}
         _data={_data}
         _session={_session}
