@@ -16,6 +16,7 @@ export default function GradeBoard({ _session, _data }) {
   const [alert, setAlert] = useState({});
 
   const [showGradeModal, setShowGradeModal] = useState(false);
+  let studentArray = _data.course.studentIds;
 
   return (
     <>
@@ -53,6 +54,59 @@ export default function GradeBoard({ _session, _data }) {
           </div>
         </>
       )}
+      <div className="flex flex-col">
+        <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+          <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+            <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Name
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      StudentID
+                    </th>
+                    {_data.course.assignments.map((item) => (
+                      <th
+                        key={item._id}
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        {item.name} - {item.point}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {studentArray.map((item, key) => (
+                    <tr key={key}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {item.split(';')[1]}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {item.split(';')[0]}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <input type="text" value="100/100" />
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <input type="text" value="100/100" />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
       <UploadStudentIdModal
         showModal={showModal}
         setShowModal={setShowModal}
