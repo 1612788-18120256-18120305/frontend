@@ -19,9 +19,24 @@ const DownloadGradeTemplateButton = ({ studentIds, assignment }) => {
   };
 
   return (
-    <button className="btn btn-primary mr-4" onClick={handleFileDowload}>
-      Download grade template
-    </button>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-6 w-6 cursor-pointer"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      onClick={handleFileDowload}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+      />
+    </svg>
+    // <button className="btn btn-primary mr-4" onClick={handleFileDowload}>
+    //   Download grade template
+    // </button>
   );
 };
 

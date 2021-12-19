@@ -6,6 +6,7 @@ import Alert from '../../../../components/Alert/Alert';
 import UploadStudentIdModal from '../../../../components/Modal/UploadStudentIdModal';
 import UploadGradeModal from '../../../../components/Modal/UploadGradeModal';
 import DownloadGradeTemplateButton from '../../../../components/Grade/DownloadGradeTemplateButton';
+import InputGradeBoard from '../../../../components/Grade/InputGradeBoard';
 
 export default function GradeBoard({ _session, _data }) {
   const [isTeacher, setIsTeacher] = useState(
@@ -16,7 +17,9 @@ export default function GradeBoard({ _session, _data }) {
   const [alert, setAlert] = useState({});
 
   const [showGradeModal, setShowGradeModal] = useState(false);
-  let studentArray = _data.course.studentIds;
+  const studentArray = _data.course.studentIds;
+  const assignments = _data.course.assignments;
+  console.log(assignments);
 
   return (
     <>
@@ -40,10 +43,10 @@ export default function GradeBoard({ _session, _data }) {
                     <button className="btn btn-secondary mr-4" onClick={() => setShowModal(true)}>
                       Upload CSV
                     </button>
-                    <DownloadGradeTemplateButton
+                    {/* <DownloadGradeTemplateButton
                       studentIds={_data.course.studentIds}
                       assignment={_data.course.assignments[0]}
-                    />
+                    /> */}
                     <button className="btn btn-secondary" onClick={() => setShowGradeModal(true)}>
                       Upload grade
                     </button>
@@ -65,21 +68,25 @@ export default function GradeBoard({ _session, _data }) {
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
-                      Name
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
                       StudentID
                     </th>
-                    {_data.course.assignments.map((item) => (
+                    {assignments.map((item) => (
                       <th
                         key={item._id}
                         scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                       >
-                        {item.name} - {item.point}
+                        <div className="flex items-center">
+                          <div className="px-1">
+                            {item.name} - {item.point}
+                          </div>
+                          <div>
+                            <DownloadGradeTemplateButton
+                              studentIds={_data.course.studentIds}
+                              assignment={item}
+                            />
+                          </div>
+                        </div>
                       </th>
                     ))}
                   </tr>
@@ -87,18 +94,16 @@ export default function GradeBoard({ _session, _data }) {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {studentArray.map((item, key) => (
                     <tr key={key}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {item.split(';')[1]}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {item.split(';')[0]}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <input type="text" value="100/100" />
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <input type="text" value="100/100" />
-                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item}</td>
+                      {assignments.map((assignment, key) => (
+                        <td key={key} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {/* <input
+                            type="text"
+                            value={assignment.grades.find((obj) => obj.id === item)?.grade}
+                          /> */}
+                          <InputGradeBoard assignment={assignment} item={item} />
+                        </td>
+                      ))}
                     </tr>
                   ))}
                 </tbody>
