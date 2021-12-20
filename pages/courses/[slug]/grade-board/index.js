@@ -7,6 +7,7 @@ import UploadStudentIdModal from '../../../../components/Modal/UploadStudentIdMo
 import UploadGradeModal from '../../../../components/Modal/UploadGradeModal';
 import DownloadGradeTemplateButton from '../../../../components/Grade/DownloadGradeTemplateButton';
 import InputGradeBoard from '../../../../components/Grade/InputGradeBoard';
+import ExportGradeButton from '../../../../components/Grade/ExportGradeButton';
 
 export default function GradeBoard({ _session, _data }) {
   const [isTeacher, setIsTeacher] = useState(
@@ -47,9 +48,13 @@ export default function GradeBoard({ _session, _data }) {
                       studentIds={_data.course.studentIds}
                       assignment={_data.course.assignments[0]}
                     /> */}
-                    <button className="btn btn-secondary" onClick={() => setShowGradeModal(true)}>
+                    <button
+                      className="btn btn-secondary mr-4"
+                      onClick={() => setShowGradeModal(true)}
+                    >
                       Upload grade
                     </button>
+                    <ExportGradeButton course={_data.course} />
                   </div>
                 )}
               </div>

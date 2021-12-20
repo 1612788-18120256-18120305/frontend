@@ -9,7 +9,6 @@ const DownloadGradeTemplateButton = ({ studentIds, assignment }) => {
       data: studentIds.map((studentId) => [studentId]),
     };
     const csv = Papa.unparse(csvObject);
-    console.log(csv);
     var BOM = new Uint8Array([0xef, 0xbb, 0xbf]);
     const blob = new Blob([BOM, csv], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
