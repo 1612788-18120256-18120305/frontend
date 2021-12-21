@@ -106,7 +106,12 @@ export default function GradeBoard({ _session, _data }) {
                             type="text"
                             value={assignment.grades.find((obj) => obj.id === item)?.grade}
                           /> */}
-                          <InputGradeBoard assignment={assignment} item={item} />
+                          <InputGradeBoard
+                            courseSlug={_data.course.slug}
+                            assignment={assignment}
+                            _session={_session}
+                            item={item}
+                          />
                         </td>
                       ))}
                     </tr>
