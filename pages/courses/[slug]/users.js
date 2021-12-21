@@ -241,6 +241,16 @@ export async function getServerSideProps(ctx) {
   if (res.ok) {
     const _data = await res.json();
     if (_data.success) {
+      const invite = await axios.get(`${BACKEND_URL}/courses/${_data.course._id}/invitation`, {
+        headers: {
+          Authorization: `Bearer ${_session?.jwt}`,
+        },
+      });
+      if (invite.data.success) {
+        _data.course.joinId = invite.data.invitation.inviteCode;
+      } else {
+        _data.course.joinId = null;
+      }
       return {
         props: { _session, _data },
       };
