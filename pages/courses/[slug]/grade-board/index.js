@@ -8,8 +8,9 @@ import UploadGradeModal from '../../../../components/Modal/UploadGradeModal';
 import DownloadGradeTemplateButton from '../../../../components/Grade/DownloadGradeTemplateButton';
 import InputGradeBoard from '../../../../components/Grade/InputGradeBoard';
 import ExportGradeButton from '../../../../components/Grade/ExportGradeButton';
+import axios from 'axios';
 
-export default function GradeBoard({ _session, _data }) {
+export default function GradeBoard({ _session, _data, _user }) {
   const [isTeacher, setIsTeacher] = useState(
     _session.user._id == _data.course.owner._id ||
       JSON.stringify(_data.course.teachers).includes(_session.user._id)
@@ -20,7 +21,28 @@ export default function GradeBoard({ _session, _data }) {
   const [showGradeModal, setShowGradeModal] = useState(false);
   const studentArray = _data.course.studentIds;
   const assignments = _data.course.assignments;
-  console.log(assignments);
+  let countRow = [];
+  studentArray.map((student, key) => {
+    let temp = 0;
+    {
+      assignments.map((assignment, key) => {
+        temp += assignment.grades.find((obj) => obj.id === student)?.grade;
+      });
+    }
+    countRow.push(temp);
+    // console.log(temp);
+  });
+
+  let countCol = [];
+  assignments.map((assignment, key) => {
+    let temp = 0;
+    assignment.grades.map((grade, key) => {
+      temp += grade.grade;
+    });
+    countCol.push(temp);
+    // console.log(temp);
+  });
+  console.log(_user);
 
   return (
     <>
@@ -62,44 +84,124 @@ export default function GradeBoard({ _session, _data }) {
           </div>
         </>
       )}
-      <div className="flex flex-col">
-        <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-            <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-              <table className="min-w-full divide-y divide-gray-200 mt-4">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      StudentID
-                    </th>
-                    {assignments.map((item) => (
+
+      {isTeacher && (
+        <div className="flex flex-col">
+          <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+            <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+              <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
                       <th
-                        key={item._id}
                         scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                       >
-                        <div className="flex items-center">
-                          <div className="px-1">
-                            {item.name} - {item.point}
-                          </div>
-                          <div>
-                            <DownloadGradeTemplateButton
-                              studentIds={_data.course.studentIds}
-                              assignment={item}
-                            />
-                          </div>
-                        </div>
+                        StudentID
                       </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Total
+                      </th>
+                      {assignments.map((item, key) => (
+                        <th
+                          key={item._id}
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        >
+                          <div className="flex items-center">
+                            <div className="px-1">
+                              {item.name} - {item.point}
+                            </div>
+                            <div>
+                              <DownloadGradeTemplateButton
+                                studentIds={_data.course.studentIds}
+                                assignment={item}
+                              />
+                            </div>
+                            {countCol[key]}
+                          </div>
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {studentArray.map((item, key) => (
+                      <tr key={key}>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {item}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {countRow[key]}
+                        </td>
+                        {assignments.map((assignment, key) => (
+                          <td
+                            key={key}
+                            className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                          >
+                            <InputGradeBoard
+                              courseSlug={_data.course.slug}
+                              assignment={assignment}
+                              _session={_session}
+                              item={item}
+                            />
+                          </td>
+                        ))}
+                      </tr>
                     ))}
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {studentArray.map((item, key) => (
-                    <tr key={key}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item}</td>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {!isTeacher && (
+        <div className="flex flex-col">
+          <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+            <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+              <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        StudentID
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Total
+                      </th>
+                      {assignments.map((item, key) => (
+                        <th
+                          key={item._id}
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        >
+                          <div className="flex items-center">
+                            <div className="px-1">
+                              {item.name} - {item.point}
+                            </div>
+                          </div>
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    <tr>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {_user.student}
+                      </td>
+                      {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {countRow[key]}
+                      </td> */}
                       {assignments.map((assignment, key) => (
                         <td
                           key={key}
@@ -114,13 +216,13 @@ export default function GradeBoard({ _session, _data }) {
                         </td>
                       ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
       <UploadStudentIdModal
         showModal={showModal}
         setShowModal={setShowModal}
@@ -153,8 +255,23 @@ export async function getServerSideProps(ctx) {
   if (res.ok) {
     const _data = await res.json();
     if (_data.success) {
+      const invite = await axios.get(`${BACKEND_URL}/courses/${_data.course._id}/invitation`, {
+        headers: {
+          Authorization: `Bearer ${_session?.jwt}`,
+        },
+      });
+      if (invite.data.success) {
+        _data.course.joinId = invite.data.invitation.inviteCode;
+      } else {
+        _data.course.joinId = null;
+      }
+      const _user = await axios.get(BACKEND_URL + ('/users/' + _session?.user?._id), {
+        headers: {
+          Authorization: `Bearer ${_session?.jwt}`,
+        },
+      });
       return {
-        props: { _session, _data },
+        props: { _session, _data, _user: _user.data.user },
       };
     } else {
       return {
