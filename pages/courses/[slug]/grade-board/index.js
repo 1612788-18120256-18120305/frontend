@@ -8,6 +8,7 @@ import UploadGradeModal from '../../../../components/Modal/UploadGradeModal';
 import DownloadGradeTemplateButton from '../../../../components/Grade/DownloadGradeTemplateButton';
 import InputGradeBoard from '../../../../components/Grade/InputGradeBoard';
 import ExportGradeButton from '../../../../components/Grade/ExportGradeButton';
+import MarkAllGradeFinalized from '../../../../components/Grade/MarkAllGradeFinalized';
 import axios from 'axios';
 
 export default function GradeBoard({ _session, _data, _user }) {
@@ -20,7 +21,8 @@ export default function GradeBoard({ _session, _data, _user }) {
 
   const [showGradeModal, setShowGradeModal] = useState(false);
   const studentArray = _data.course.studentIds;
-  const assignments = _data.course.assignments;
+  const [assignments, setAssignments] = useState(_data.course.assignments);
+  console.log('render');
   let countRow = [];
   studentArray.map((student, key) => {
     let temp = 0;
@@ -42,7 +44,6 @@ export default function GradeBoard({ _session, _data, _user }) {
     countCol.push(temp);
     // console.log(temp);
   });
-  console.log(_user);
 
   return (
     <>
@@ -109,7 +110,7 @@ export default function GradeBoard({ _session, _data, _user }) {
                         <th
                           key={item._id}
                           scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider relative"
                         >
                           <div className="flex items-center">
                             <div className="px-1">
@@ -123,6 +124,13 @@ export default function GradeBoard({ _session, _data, _user }) {
                             </div>
                             {countCol[key]}
                           </div>
+                          <MarkAllGradeFinalized
+                            courseSlug={_data.course.slug}
+                            assignment={item}
+                            assignments={assignments}
+                            _session={_session}
+                            updateAction={setAssignments}
+                          />
                         </th>
                       ))}
                     </tr>
@@ -139,7 +147,7 @@ export default function GradeBoard({ _session, _data, _user }) {
                         {assignments.map((assignment, key) => (
                           <td
                             key={key}
-                            className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                            className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 relative"
                           >
                             <InputGradeBoard
                               courseSlug={_data.course.slug}
@@ -203,16 +211,8 @@ export default function GradeBoard({ _session, _data, _user }) {
                         {countRow[key]}
                       </td> */}
                       {assignments.map((assignment, key) => (
-                        <td
-                          key={key}
-                          className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 relative"
-                        >
-                          <InputGradeBoard
-                            courseSlug={_data.course.slug}
-                            assignment={assignment}
-                            _session={_session}
-                            item={item}
-                          />
+                        <td key={key} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {assignment.grades.find((obj) => obj.id === _user.student)?.grade}
                         </td>
                       ))}
                     </tr>
