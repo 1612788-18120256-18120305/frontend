@@ -45,12 +45,11 @@ export default function GradeBoard({ _session, _data, _user }) {
     // console.log(temp);
   });
 
-  let count = !isTeacher
-    ? assignments.reduce((acc, item) => {
-        const temp = item.grades.find((obj) => obj.id === _user.student && !obj.draft)?.grade;
-        return acc + isNaN(temp) ? 0 : temp;
-      }, 0)
-    : 0;
+  const gradeStudent = assignments.map(
+    (assignment) =>
+      assignment.grades.find((obj) => obj.id === _user.student && !obj.draft)?.grade ?? 0
+  );
+  let count = !isTeacher ? gradeStudent.reduce((a, b) => a + b) : 0;
 
   return (
     <>
