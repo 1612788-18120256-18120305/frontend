@@ -51,7 +51,9 @@ export default function GradeBoard({ _session, _data, _user }) {
     (assignment) =>
       assignment.grades.find((obj) => obj.id === _user.student && !obj.draft)?.grade ?? 0
   );
-  let count = !isTeacher ? gradeStudent.reduce((a, b) => a + b) : 0;
+  let count = 0;
+  if (!isTeacher && gradeStudent.length > 0) count = gradeStudent.reduce((a, b) => a + b);
+  else count = 0;
 
   return (
     <>
