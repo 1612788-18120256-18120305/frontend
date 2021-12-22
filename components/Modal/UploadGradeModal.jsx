@@ -4,6 +4,7 @@ import UploadModal from './UploadModal';
 import axios from 'axios';
 import Papa from 'papaparse';
 import { stringify } from 'postcss';
+import Router from 'next/router';
 
 const parseGradeData = (data) => {
   if (!data) {
@@ -70,6 +71,8 @@ const UploadGradeModal = ({ showModal, setShowModal, setAlert, _session, _data }
           setTimeout(() => {
             setAlert({});
           }, 3000);
+
+          Router.reload(window.location.pathname);
         } catch (err) {
           setLoading(false);
           setShowModal(false);
