@@ -5,7 +5,7 @@ import { BACKEND_URL } from '../../lib/Utils';
 export default function InputGradeBoard({ courseSlug, assignment, item, _session, updateAction }) {
   const oldGrade = assignment.grades.find((obj) => obj.id === item);
 
-  const [grade, setGrade] = useState(oldGrade.grade);
+  const [grade, setGrade] = useState(oldGrade?.grade ?? 0);
   async function handleGradeChange(e) {
     const value = e.target.value;
     if (value > 100 || value < 0 || value.length > 3) {
@@ -66,7 +66,7 @@ export default function InputGradeBoard({ courseSlug, assignment, item, _session
         </ul>
       </div>
       <input
-        className={`${oldGrade.draft ? '' : 'text-green-600 font-bold'}`}
+        className={`${oldGrade?.draft ? '' : 'text-green-600 font-bold'}`}
         type="number"
         min="0"
         max="100"

@@ -211,7 +211,8 @@ export default function GradeBoard({ _session, _data, _user }) {
                       </td> */}
                       {assignments.map((assignment, key) => (
                         <td key={key} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {assignment.grades.find((obj) => obj.id === _user.student)?.grade}
+                          {assignment.grades.find((obj) => obj.id === _user.student && !obj.draft)
+                            ?.grade ?? 0}
                         </td>
                       ))}
                     </tr>
