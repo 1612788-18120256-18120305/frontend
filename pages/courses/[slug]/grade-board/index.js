@@ -22,6 +22,7 @@ export default function GradeBoard({ _session, _data, _user }) {
   const [showGradeModal, setShowGradeModal] = useState(false);
   const studentArray = _data.course.studentIds;
   const [assignments, setAssignments] = useState(_data.course.assignments);
+  let initialValue = 0;
   let countRow = [];
   studentArray.map((student, key) => {
     let temp = 0;
@@ -43,6 +44,13 @@ export default function GradeBoard({ _session, _data, _user }) {
     countCol.push(temp);
     // console.log(temp);
   });
+
+  let count = !isTeacher
+    ? assignments.reduce((acc, item) => {
+        const temp = item.grades.find((obj) => obj.id === _user.student && !obj.draft)?.grade;
+        return acc + isNaN(temp) ? 0 : temp;
+      }, 0)
+    : 0;
 
   return (
     <>
@@ -209,6 +217,7 @@ export default function GradeBoard({ _session, _data, _user }) {
                       {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {countRow[key]}
                       </td> */}
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{count}</td>
                       {assignments.map((assignment, key) => (
                         <td key={key} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {assignment.grades.find((obj) => obj.id === _user.student && !obj.draft)
