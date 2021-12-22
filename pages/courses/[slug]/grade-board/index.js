@@ -22,7 +22,6 @@ export default function GradeBoard({ _session, _data, _user }) {
   const [showGradeModal, setShowGradeModal] = useState(false);
   const studentArray = _data.course.studentIds;
   const [assignments, setAssignments] = useState(_data.course.assignments);
-  console.log('render');
   let countRow = [];
   studentArray.map((student, key) => {
     let temp = 0;
@@ -87,7 +86,7 @@ export default function GradeBoard({ _session, _data, _user }) {
       )}
 
       {isTeacher && (
-        <div className="flex flex-col">
+        <div className="flex flex-col mt-4">
           <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
               <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
@@ -127,7 +126,6 @@ export default function GradeBoard({ _session, _data, _user }) {
                           <MarkAllGradeFinalized
                             courseSlug={_data.course.slug}
                             assignment={item}
-                            assignments={assignments}
                             _session={_session}
                             updateAction={setAssignments}
                           />
@@ -154,6 +152,7 @@ export default function GradeBoard({ _session, _data, _user }) {
                               assignment={assignment}
                               _session={_session}
                               item={item}
+                              updateAction={setAssignments}
                             />
                           </td>
                         ))}

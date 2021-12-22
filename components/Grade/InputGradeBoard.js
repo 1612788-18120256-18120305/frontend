@@ -2,11 +2,10 @@ import { useState } from 'react';
 import axios from 'axios';
 import { BACKEND_URL } from '../../lib/Utils';
 
-export default function InputGradeBoard({ courseSlug, assignment, item, _session }) {
+export default function InputGradeBoard({ courseSlug, assignment, item, _session, updateAction }) {
   const oldGrade = assignment.grades.find((obj) => obj.id === item);
-  const [draft, setDraft] = useState(oldGrade.draft);
-  const [grade, setGrade] = useState(oldGrade.grade);
 
+  const [grade, setGrade] = useState(oldGrade.grade);
   async function handleGradeChange(e) {
     const value = e.target.value;
     if (value > 100 || value < 0 || value.length > 3) {
@@ -25,7 +24,7 @@ export default function InputGradeBoard({ courseSlug, assignment, item, _session
   }
 
   async function handleFinalizedGrade() {
-    const res = await axios.post(
+    await axios.post(
       BACKEND_URL + `/courses/${courseSlug}/assignment/${assignment._id}/finalize`,
       { studentId: item },
       {
@@ -34,9 +33,16 @@ export default function InputGradeBoard({ courseSlug, assignment, item, _session
         },
       }
     );
-    if (res.status === 200) {
-      setDraft(false);
-    }
+    // refetch all assignments
+    const response = await fetch(BACKEND_URL + ('/courses/' + courseSlug), {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${_session?.jwt}`,
+      },
+    });
+    const data = await response.json();
+    updateAction(data.course.assignments);
   }
 
   return (
@@ -60,7 +66,7 @@ export default function InputGradeBoard({ courseSlug, assignment, item, _session
         </ul>
       </div>
       <input
-        className={`${draft ? '' : 'text-green-600 font-bold'}`}
+        className={`${oldGrade.draft ? '' : 'text-green-600 font-bold'}`}
         type="number"
         min="0"
         max="100"
