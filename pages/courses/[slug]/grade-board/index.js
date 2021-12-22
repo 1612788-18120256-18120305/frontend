@@ -28,7 +28,8 @@ export default function GradeBoard({ _session, _data, _user }) {
     let temp = 0;
     {
       assignments.map((assignment, key) => {
-        temp += assignment.grades.find((obj) => obj.id === student)?.grade;
+        const score = assignment.grades.find((obj) => obj.id === student)?.grade;
+        if (!isNaN(score)) temp += score;
       });
     }
     countRow.push(temp);
@@ -39,7 +40,8 @@ export default function GradeBoard({ _session, _data, _user }) {
   assignments.map((assignment, key) => {
     let temp = 0;
     assignment.grades.map((grade, key) => {
-      temp += grade.grade;
+      const score = grade.grade;
+      if (!isNaN(score)) temp += score;
     });
     countCol.push(temp);
     // console.log(temp);
