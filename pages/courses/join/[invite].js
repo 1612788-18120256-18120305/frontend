@@ -1,7 +1,8 @@
-import React from "react";
-import axios from "axios";
-import { BACKEND_URL } from "../../../lib/Utils";
-import { getSession } from "next-auth/react";
+import React from 'react';
+import axios from 'axios';
+import { BACKEND_URL } from '../../../lib/Utils';
+import { getSession } from 'next-auth/react';
+import Layout from '../../../components/Layout';
 
 const JoinCourse = ({ success, error, course }) => {
   if (success) {
@@ -17,7 +18,7 @@ export const getServerSideProps = async (ctx) => {
   try {
     const res = await axios.get(`${BACKEND_URL}/courses/join/${code}`, {
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${_session?.jwt}`,
       },
     });
@@ -39,7 +40,7 @@ export const getServerSideProps = async (ctx) => {
   } catch (error) {
     return {
       redirect: {
-        destination: "/auth/login",
+        destination: '/auth/login',
         permanent: false,
       },
     };
@@ -47,3 +48,7 @@ export const getServerSideProps = async (ctx) => {
 };
 
 export default JoinCourse;
+
+JoinCourse.getLayout = function getLayout(page) {
+  return <Layout>{page}</Layout>;
+};

@@ -2,6 +2,7 @@ import { getSession } from 'next-auth/react';
 import { BACKEND_URL, NEXTAUTH_URL } from '../../../../lib/Utils';
 import Link from 'next/link';
 import React from 'react';
+import Layout from '../../../../components/Layout';
 
 const GradeViewer = ({ assignments, slug }) => {
   let count = 0;
@@ -72,6 +73,9 @@ const GradeViewer = ({ assignments, slug }) => {
 };
 
 export default GradeViewer;
+GradeViewer.getLayout = function getLayout(page) {
+  return <Layout>{page}</Layout>;
+};
 
 export async function getServerSideProps(ctx) {
   const _session = await getSession(ctx);

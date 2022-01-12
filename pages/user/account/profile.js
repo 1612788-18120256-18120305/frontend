@@ -1,7 +1,8 @@
-import { getSession } from "next-auth/react";
-import { useState } from "react";
-import Loading from "../../../components/Loading";
-import { BACKEND_URL } from "../../../lib/Utils";
+import { getSession } from 'next-auth/react';
+import { useState } from 'react';
+import Layout from '../../../components/Layout';
+import Loading from '../../../components/Loading';
+import { BACKEND_URL } from '../../../lib/Utils';
 
 export default function Profile({ _session, _data }) {
   // console.log("data", _data);
@@ -9,14 +10,14 @@ export default function Profile({ _session, _data }) {
   const [activeStudentId, setActiveStudentId] = useState(_data?.user?.student);
   const [email, setEmail] = useState(_data?.user?.email);
   const [name, setName] = useState(_data?.user?.name);
-  const [alert, setAlert] = useState("");
+  const [alert, setAlert] = useState('');
 
   const handleSubmit = async () => {
-    setAlert("");
-    fetch(BACKEND_URL + "/users/" + _data?.user?._id, {
-      method: "PUT",
+    setAlert('');
+    fetch(BACKEND_URL + '/users/' + _data?.user?._id, {
+      method: 'PUT',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${_session?.jwt}`,
       },
       body: JSON.stringify({ name, student: studentId }),
@@ -24,15 +25,15 @@ export default function Profile({ _session, _data }) {
       .then((response) => response.json())
       .then((data) => {
         if (data.success == false) {
-          setAlert("StudentId already exists");
+          setAlert('StudentId already exists');
         } else {
-          setAlert("Updated profile");
+          setAlert('Updated profile');
           setActiveStudentId(true);
         }
         // console.log(_session, _data, data, "Updated profile");
       })
       .catch((error) => {
-        console.error("Error:", error);
+        console.error('Error:', error);
       });
   };
 
@@ -51,9 +52,7 @@ export default function Profile({ _session, _data }) {
               <div className="md:grid md:grid-cols-3 md:gap-6">
                 <div className="md:col-span-1">
                   <div className="px-4 sm:px-0">
-                    <h3 className="text-lg font-medium leading-6 text-gray-900">
-                      Profile
-                    </h3>
+                    <h3 className="text-lg font-medium leading-6 text-gray-900">Profile</h3>
                   </div>
                 </div>
                 <div className="mt-5 md:mt-0 md:col-span-2">
@@ -110,7 +109,7 @@ export default function Profile({ _session, _data }) {
                               onChange={(e) => setStudentId(e.target.value)}
                               disabled={activeStudentId ? true : false}
                               className={`h-8 p-2 mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md ${
-                                activeStudentId ? "bg-gray-300" : ""
+                                activeStudentId ? 'bg-gray-300' : ''
                               }`}
                             />
                           </div>
@@ -137,13 +136,15 @@ export default function Profile({ _session, _data }) {
     </div>
   );
 }
-
+Profile.getLayout = function getLayout(page) {
+  return <Layout>{page}</Layout>;
+};
 export async function getServerSideProps(ctx) {
   const _session = await getSession(ctx);
-  const res = await fetch(BACKEND_URL + ("/users/" + _session?.user?._id), {
-    method: "GET",
+  const res = await fetch(BACKEND_URL + ('/users/' + _session?.user?._id), {
+    method: 'GET',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       Authorization: `Bearer ${_session?.jwt}`,
     },
   });
@@ -162,7 +163,7 @@ export async function getServerSideProps(ctx) {
     return {
       redirect: {
         permanent: false,
-        destination: "/auth/login",
+        destination: '/auth/login',
       },
     };
   }

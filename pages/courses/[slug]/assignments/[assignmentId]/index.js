@@ -3,6 +3,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { getSession } from 'next-auth/react';
 import { BACKEND_URL } from '../../../../../lib/Utils';
+import Layout from '../../../../../components/Layout';
 
 const Assignment = ({ assignment, slug, _session }) => {
   console.log(slug);
@@ -105,6 +106,9 @@ const Assignment = ({ assignment, slug, _session }) => {
 };
 
 export default Assignment;
+Assignment.getLayout = function getLayout(page) {
+  return <Layout>{page}</Layout>;
+};
 
 export async function getServerSideProps(ctx) {
   const _session = await getSession(ctx);

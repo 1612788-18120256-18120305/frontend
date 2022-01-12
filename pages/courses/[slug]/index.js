@@ -3,6 +3,7 @@ import { getSession } from 'next-auth/react';
 import { BACKEND_URL } from '../../../lib/Utils';
 import axios from 'axios';
 import BC from '../../../components/Course/BC';
+import Layout from '../../../components/Layout';
 export default function CoursePage({ _data }) {
   const { assignments } = _data.course;
   return (
@@ -124,6 +125,9 @@ export default function CoursePage({ _data }) {
     </>
   );
 }
+CoursePage.getLayout = function getLayout(page) {
+  return <Layout>{page}</Layout>;
+};
 
 export async function getServerSideProps(ctx) {
   const _session = await getSession(ctx);

@@ -1,11 +1,12 @@
-import Head from "next/head";
-import Image from "next/image";
-import Link from "next/link";
-import AddModal from "../../components/Course/AddModal";
-import JoinModal from "../../components/Course/JoinModal";
-import CourseCard from "../../components/Course/Card";
-import { getSession } from "next-auth/react";
-import { BACKEND_URL } from "../../lib/Utils";
+import Head from 'next/head';
+import Image from 'next/image';
+import Link from 'next/link';
+import AddModal from '../../components/Course/AddModal';
+import JoinModal from '../../components/Course/JoinModal';
+import CourseCard from '../../components/Course/Card';
+import { getSession } from 'next-auth/react';
+import { BACKEND_URL } from '../../lib/Utils';
+import Layout from '../../components/Layout';
 
 export default function CoursesPage({ _session, _data }) {
   return (
@@ -13,7 +14,7 @@ export default function CoursesPage({ _session, _data }) {
       {_session && (
         <div className="flex justify-center items-center">
           <AddModal BACKEND_URL={BACKEND_URL} />
-          <div className="ml-3"/>
+          <div className="ml-3" />
           <JoinModal BACKEND_URL={BACKEND_URL} />
         </div>
       )}
@@ -27,14 +28,16 @@ export default function CoursesPage({ _session, _data }) {
     </>
   );
 }
-
+CoursesPage.getLayout = function getLayout(page) {
+  return <Layout>{page}</Layout>;
+};
 export async function getServerSideProps(ctx) {
   const _session = await getSession(ctx);
 
-  const res = await fetch(BACKEND_URL + "/courses", {
-    method: "GET",
+  const res = await fetch(BACKEND_URL + '/courses', {
+    method: 'GET',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       Authorization: `Bearer ${_session?.jwt}`,
     },
   });
@@ -53,7 +56,7 @@ export async function getServerSideProps(ctx) {
     return {
       redirect: {
         permanent: false,
-        destination: "/auth/login",
+        destination: '/auth/login',
       },
     };
   }

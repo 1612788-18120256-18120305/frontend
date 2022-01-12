@@ -1,10 +1,10 @@
 import { signIn, getSession, getCsrfToken } from 'next-auth/react';
-import { BACKEND_URL } from '../../../lib/Utils';
+import { BACKEND_URL } from '../../lib/Utils';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import validator from 'email-validator';
 import { useRouter } from 'next/router';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function Login({ csrfToken }) {
@@ -46,15 +46,7 @@ export default function Login({ csrfToken }) {
               });
           } else {
             setAlert(data.message);
-            toast.error(data.message, {
-              position: 'top-center',
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-            });
+            toast.error(data.message);
           }
         })
         .catch((error) => {
@@ -66,18 +58,7 @@ export default function Login({ csrfToken }) {
 
   return (
     <>
-      <ToastContainer
-        position="top-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
-      <div className="flex justify-center min-h-screen items-center">
+      <div className="flex justify-center min-h-screen items-center bg-gradient-to-tl from-green-400 to-indigo-900">
         <div className="flex flex-col w-full max-w-md px-4 py-8 bg-gray-100 rounded-lg shadow dark:bg-gray-800 sm:px-6 md:px-8 lg:px-10">
           <div className="self-center mb-6 text-xl font-light text-gray-600 sm:text-2xl dark:text-white">
             Login To Your Account

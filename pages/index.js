@@ -1,6 +1,7 @@
-import { getSession } from "next-auth/react";
-import Head from "next/head";
-import { BACKEND_URL } from "../lib/Utils";
+import { getSession } from 'next-auth/react';
+import Head from 'next/head';
+import { BACKEND_URL } from '../lib/Utils';
+import Layout from '../components/Layout';
 
 export default function Home() {
   return (
@@ -18,12 +19,16 @@ export default function Home() {
   );
 }
 
+Home.getLayout = function getLayout(page) {
+  return <Layout>{page}</Layout>;
+};
+
 export async function getServerSideProps(ctx) {
   const _session = await getSession(ctx);
-  const res = await fetch(BACKEND_URL + ("/users/" + _session?.user?._id), {
-    method: "GET",
+  const res = await fetch(BACKEND_URL + ('/users/' + _session?.user?._id), {
+    method: 'GET',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       Authorization: `Bearer ${_session?.jwt}`,
     },
   });
@@ -42,7 +47,7 @@ export async function getServerSideProps(ctx) {
     return {
       redirect: {
         permanent: false,
-        destination: "/auth/login",
+        destination: '/auth/login',
       },
     };
   }

@@ -10,6 +10,7 @@ import InputGradeBoard from '../../../../components/Grade/InputGradeBoard';
 import ExportGradeButton from '../../../../components/Grade/ExportGradeButton';
 import MarkAllGradeFinalized from '../../../../components/Grade/MarkAllGradeFinalized';
 import axios from 'axios';
+import Layout from '../../../../components/Layout';
 
 export default function GradeBoard({ _session, _data, _user }) {
   const [isTeacher, setIsTeacher] = useState(
@@ -253,6 +254,9 @@ export default function GradeBoard({ _session, _data, _user }) {
     </>
   );
 }
+GradeBoard.getLayout = function getLayout(page) {
+  return <Layout>{page}</Layout>;
+};
 
 export async function getServerSideProps(ctx) {
   const _session = await getSession(ctx);

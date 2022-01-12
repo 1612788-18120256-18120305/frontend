@@ -4,6 +4,7 @@ import { useState } from 'react';
 import InviteModal from '../../../components/Course/InviteModal';
 import axios from 'axios';
 import BC from '../../../components/Course/BC';
+import Layout from '../../../components/Layout';
 
 export default function Users({ _session, _data }) {
   const [isTeacher, setIsTeacher] = useState(
@@ -227,6 +228,9 @@ export default function Users({ _session, _data }) {
     </>
   );
 }
+Users.getLayout = function getLayout(page) {
+  return <Layout>{page}</Layout>;
+};
 
 export async function getServerSideProps(ctx) {
   const _session = await getSession(ctx);

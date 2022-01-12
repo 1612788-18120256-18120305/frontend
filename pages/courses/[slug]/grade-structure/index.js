@@ -4,6 +4,7 @@ import { getSession } from 'next-auth/react';
 import { DragDropContext, Droppable, Draggable } from '../../../../components/common/dnd_component';
 import axios from 'axios';
 import BC from '../../../../components/Course/BC';
+import Layout from '../../../../components/Layout';
 
 function GradeStructure({ listAssignment, _session, slug, course, _data }) {
   const [title, setTitle] = useState('');
@@ -243,6 +244,9 @@ function GradeStructure({ listAssignment, _session, slug, course, _data }) {
 }
 
 export default GradeStructure;
+GradeStructure.getLayout = function getLayout(page) {
+  return <Layout>{page}</Layout>;
+};
 
 export const getServerSideProps = async (context) => {
   const _session = await getSession(context);
