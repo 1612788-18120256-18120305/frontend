@@ -137,7 +137,7 @@ export default function Profile({ _session, _data }) {
   );
 }
 Profile.getLayout = function getLayout(page) {
-  return <Layout>{page}</Layout>;
+  return <Layout active={'/user/account/profile'}>{page}</Layout>;
 };
 export async function getServerSideProps(ctx) {
   const _session = await getSession(ctx);

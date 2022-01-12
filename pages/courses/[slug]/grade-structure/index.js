@@ -245,7 +245,7 @@ function GradeStructure({ listAssignment, _session, slug, course, _data }) {
 
 export default GradeStructure;
 GradeStructure.getLayout = function getLayout(page) {
-  return <Layout>{page}</Layout>;
+  return <Layout active={'/courses'}>{page}</Layout>;
 };
 
 export const getServerSideProps = async (context) => {

@@ -255,7 +255,7 @@ export default function GradeBoard({ _session, _data, _user }) {
   );
 }
 GradeBoard.getLayout = function getLayout(page) {
-  return <Layout>{page}</Layout>;
+  return <Layout active={'/courses'}>{page}</Layout>;
 };
 
 export async function getServerSideProps(ctx) {

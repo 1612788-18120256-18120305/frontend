@@ -74,7 +74,7 @@ const GradeViewer = ({ assignments, slug }) => {
 
 export default GradeViewer;
 GradeViewer.getLayout = function getLayout(page) {
-  return <Layout>{page}</Layout>;
+  return <Layout active={'/courses'}>{page}</Layout>;
 };
 
 export async function getServerSideProps(ctx) {

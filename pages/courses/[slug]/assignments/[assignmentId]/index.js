@@ -107,7 +107,7 @@ const Assignment = ({ assignment, slug, _session }) => {
 
 export default Assignment;
 Assignment.getLayout = function getLayout(page) {
-  return <Layout>{page}</Layout>;
+  return <Layout active={'/courses'}>{page}</Layout>;
 };
 
 export async function getServerSideProps(ctx) {

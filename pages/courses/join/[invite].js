@@ -50,5 +50,5 @@ export const getServerSideProps = async (ctx) => {
 export default JoinCourse;
 
 JoinCourse.getLayout = function getLayout(page) {
-  return <Layout>{page}</Layout>;
+  return <Layout active={'/courses'}>{page}</Layout>;
 };

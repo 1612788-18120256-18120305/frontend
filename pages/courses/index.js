@@ -18,8 +18,8 @@ export default function CoursesPage({ _session, _data }) {
           <JoinModal BACKEND_URL={BACKEND_URL} />
         </div>
       )}
-      <div className="py-10 sm:px-20 flex justify-center relative">
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
+      <div className="py-10 sm:px-10 flex justify-center relative">
+        <div className="grid grid-cols-1 gap-6 2xl:grid-cols-2">
           {_data?.courses?.reverse().map((course, key) => (
             <CourseCard key={key} course={course} />
           ))}
@@ -29,7 +29,7 @@ export default function CoursesPage({ _session, _data }) {
   );
 }
 CoursesPage.getLayout = function getLayout(page) {
-  return <Layout>{page}</Layout>;
+  return <Layout active={'/courses'}>{page}</Layout>;
 };
 export async function getServerSideProps(ctx) {
   const _session = await getSession(ctx);
