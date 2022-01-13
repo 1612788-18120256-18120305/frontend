@@ -10,9 +10,9 @@ export default function CoursePage({ _data }) {
     <>
       {_data && (
         <div>
-          <div className="flex justify-center mb-2">
+          {/* <div className="flex justify-center mb-2">
             <BC _data={_data} active="/" />
-          </div>
+          </div> */}
           <div className="flex justify-center">
             <div className="relative">
               <img
@@ -126,7 +126,11 @@ export default function CoursePage({ _data }) {
   );
 }
 CoursePage.getLayout = function getLayout(page) {
-  return <Layout active={'/courses'}>{page}</Layout>;
+  return (
+    <Layout active={'/courses'} url={'overview'}>
+      {page}
+    </Layout>
+  );
 };
 
 export async function getServerSideProps(ctx) {

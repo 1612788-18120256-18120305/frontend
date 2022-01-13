@@ -143,9 +143,9 @@ export default function Users({ _session, _data }) {
       )}
       {_data && (
         <>
-          <div className="flex justify-center mb-2">
+          {/* <div className="flex justify-center mb-2">
             <BC _data={_data} active="users" />
-          </div>
+          </div> */}
           <div className="flex justify-center">
             <div className="w-full md:w-3/5">
               <div>
@@ -229,7 +229,11 @@ export default function Users({ _session, _data }) {
   );
 }
 Users.getLayout = function getLayout(page) {
-  return <Layout active={'/courses'}>{page}</Layout>;
+  return (
+    <Layout active={'/courses'} url={'users'}>
+      {page}
+    </Layout>
+  );
 };
 
 export async function getServerSideProps(ctx) {

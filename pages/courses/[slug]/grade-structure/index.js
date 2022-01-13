@@ -89,9 +89,9 @@ function GradeStructure({ listAssignment, _session, slug, course, _data }) {
 
   return (
     <div className="xl:w-2/5 xl:mx-auto">
-      <div className="flex justify-center mb-2">
+      {/* <div className="flex justify-center mb-2">
         <BC _data={_data} active="grade-structure" />
-      </div>
+      </div> */}
       <div className="font-semibold text-center pb-2 bordered">
         <h2 className="text-3xl text-red-500">Grade Structure</h2>
       </div>
@@ -245,7 +245,11 @@ function GradeStructure({ listAssignment, _session, slug, course, _data }) {
 
 export default GradeStructure;
 GradeStructure.getLayout = function getLayout(page) {
-  return <Layout active={'/courses'}>{page}</Layout>;
+  return (
+    <Layout active={'/courses'} url={'grade-structure'}>
+      {page}
+    </Layout>
+  );
 };
 
 export const getServerSideProps = async (context) => {

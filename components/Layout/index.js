@@ -2,7 +2,7 @@ import Navbar from './Navbar.js';
 import Sidebar from './Sidebar.js';
 import Footer from '../Footer';
 
-export default function Layout({ children, active }) {
+export default function Layout({ children, active, url }) {
   return (
     <>
       <div className="hidden md:block">
@@ -11,7 +11,7 @@ export default function Layout({ children, active }) {
             <Sidebar active={active} />
           </div>
           <div className="min-w-3/4 w-full">
-            <Navbar />
+            <Navbar active={active} url={url} />
             <div className="flex justify-center">
               <div className="min-h-screen w-full p-5">{children}</div>
             </div>

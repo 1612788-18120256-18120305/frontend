@@ -60,9 +60,9 @@ export default function GradeBoard({ _session, _data, _user }) {
     <>
       {_data && (
         <>
-          <div className="flex justify-center mb-2">
+          {/* <div className="flex justify-center mb-2">
             <BC _data={_data} active="grade-board" />
-          </div>
+          </div> */}
           <div className="flex justify-center">
             <div className="w-full md:w-3/5">
               <div className="py-2">
@@ -255,7 +255,11 @@ export default function GradeBoard({ _session, _data, _user }) {
   );
 }
 GradeBoard.getLayout = function getLayout(page) {
-  return <Layout active={'/courses'}>{page}</Layout>;
+  return (
+    <Layout active={'/courses'} url={'grade-board'}>
+      {page}
+    </Layout>
+  );
 };
 
 export async function getServerSideProps(ctx) {
