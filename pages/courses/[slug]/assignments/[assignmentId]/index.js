@@ -3,9 +3,10 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { getSession } from 'next-auth/react';
 import { BACKEND_URL } from '../../../../../lib/Utils';
+import GradeReviewCard from '../../../../../components/common/GradeReviewCard';
 
-const Assignment = ({ assignment, slug, _session }) => {
-  console.log(slug);
+const Assignment = ({ assignment, slug, _session, reviewRequests }) => {
+  //console.log(_session);
   const [grade, setGrade] = React.useState(0);
   const [message, setMessage] = React.useState('');
 
@@ -14,6 +15,7 @@ const Assignment = ({ assignment, slug, _session }) => {
     if (value > 10 || value < 0) return;
     setGrade(e.target.value);
   };
+  const hasPendingReview = reviewRequests.some((review) => review.status === 0);
 
   const onSubmitReview = async (e) => {
     e.preventDefault();
@@ -45,29 +47,30 @@ const Assignment = ({ assignment, slug, _session }) => {
       <p className="mt-1 text-gray-400">{new Date(assignment.createdAt).toLocaleString()}</p>
       <p className="font-bold">Ratio: {assignment.point}</p>
       <p className="font-bold">Point: {assignment.grades?.grade}</p>
-      <form
-        className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 mt-8"
-        onSubmit={onSubmitReview}
-      >
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
-            Expected grade
-          </label>
-          <input
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="grade"
-            type="number"
-            placeholder="Grade"
-            value={grade}
-            onChange={onChangeGrade}
-          />
-        </div>
-        <div className="mb-6">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
-            Message
-          </label>
-          <textarea
-            className="
+      {!hasPendingReview && (
+        <form
+          className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 mt-8"
+          onSubmit={onSubmitReview}
+        >
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
+              Expected grade
+            </label>
+            <input
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              id="grade"
+              type="number"
+              placeholder="Grade"
+              value={grade}
+              onChange={onChangeGrade}
+            />
+          </div>
+          <div className="mb-6">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+              Message
+            </label>
+            <textarea
+              className="
               form-control
               block
               w-full
@@ -84,22 +87,32 @@ const Assignment = ({ assignment, slug, _session }) => {
               m-0
               focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
             "
-            id="message"
-            rows="3"
-            placeholder="Your message"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-          ></textarea>
-        </div>
-        <div className="flex items-center justify-between">
-          <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            type="submit"
-          >
-            Submit
-          </button>
-        </div>
-      </form>
+              id="message"
+              rows="3"
+              placeholder="Your message"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+            ></textarea>
+          </div>
+          <div className="flex items-center justify-between">
+            <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              type="submit"
+            >
+              Submit
+            </button>
+          </div>
+        </form>
+      )}
+      {reviewRequests.map((request) => (
+        <GradeReviewCard
+          key={request._id}
+          review={request}
+          _session={_session}
+          slug={slug}
+          assignmentId={assignment._id}
+        />
+      ))}
     </div>
   );
 };
@@ -119,9 +132,20 @@ export async function getServerSideProps(ctx) {
     }
   );
 
+  const gradeReviewRes = await axios.get(
+    `${BACKEND_URL}/courses/${ctx.query.slug}/assignment/${ctx.query.assignmentId}/review`,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${_session?.jwt}`,
+      },
+    }
+  );
+
   return {
     props: {
       assignment: res.data.assignments,
+      reviewRequests: gradeReviewRes.data.gradeReviews,
       slug: ctx.query.slug,
       _session,
     },
