@@ -118,6 +118,11 @@ export default function CoursePage({ _data }) {
                         <a className="mt-3 btn btn-primary w-1/2 mx-auto">Edit</a>
                       </Link>
                     )}
+                    {!_data.course.joinId && (
+                      <Link href={`/courses/${_data.course.slug}/grade-viewer`}>
+                        <a className="mt-3 btn btn-primary w-1/2 mx-auto">View grade</a>
+                      </Link>
+                    )}
                   </div>
                 </div>
               </div>

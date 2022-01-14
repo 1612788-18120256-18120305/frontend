@@ -40,7 +40,7 @@ const GradeViewer = ({ assignments, slug }) => {
                     >
                       <div className="flex items-center">
                         <div className="px-1">
-                          <Link href={`${NEXTAUTH_URL}/courses/${slug}/assignments/${item._id}`}>
+                          <Link href={`/courses/${slug}/assignments/${item._id}`}>
                             <a>
                               {item.name} - {item.point}
                             </a>
