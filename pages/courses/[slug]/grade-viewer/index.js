@@ -1,5 +1,5 @@
 import { getSession } from 'next-auth/react';
-import { BACKEND_URL, NEXTAUTH_URL } from '../../../../lib/Utils';
+import { BACKEND_URL } from '../../../../lib/Utils';
 import Link from 'next/link';
 import React from 'react';
 import Layout from '../../../../components/Layout';
@@ -74,7 +74,11 @@ const GradeViewer = ({ assignments, slug }) => {
 
 export default GradeViewer;
 GradeViewer.getLayout = function getLayout(page) {
-  return <Layout active={'/courses'}>{page}</Layout>;
+  return (
+    <Layout active={'/courses'} url={'grade-viewer'}>
+      {page}
+    </Layout>
+  );
 };
 
 export async function getServerSideProps(ctx) {

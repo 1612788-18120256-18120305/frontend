@@ -1,6 +1,6 @@
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
-import { Fragment, memo, useEffect, useLayoutEffect, useState } from 'react';
+import { Fragment, memo, useEffect, useState } from 'react';
 import { Popover, Menu, Transition } from '@headlessui/react';
 import { MenuIcon, XIcon, BellIcon } from '@heroicons/react/outline';
 import { useRouter } from 'next/router';
@@ -102,6 +102,15 @@ function Header({ active, url }) {
                     Grade Board
                   </a>
                 </Link>
+                <Link href={`/courses/${router.query.slug}/grade-viewer`}>
+                  <a
+                    className={`text-base font-medium text-gray-500 hover:text-gray-900 ${
+                      url == 'grade-viewer' && 'border-b-2 border-gray-500'
+                    }`}
+                  >
+                    Grade Viewer
+                  </a>
+                </Link>
               </Popover.Group>
             )}
 
@@ -144,6 +153,21 @@ function Header({ active, url }) {
                         )}
                       </Menu.Item>
                     ))}
+                    {notification.length == 0 ? (
+                      <Menu.Item>
+                        {({ active }) => (
+                          <Link href="#">
+                            <div
+                              className={`hover:bg-gray-100 block px-4 py-2 text-sm text-gray-700 cursor-pointer`}
+                            >
+                              <div className="font-bold">Empty</div>
+                            </div>
+                          </Link>
+                        )}
+                      </Menu.Item>
+                    ) : (
+                      ''
+                    )}
                   </Menu.Items>
                 </Transition>
               </Menu>
