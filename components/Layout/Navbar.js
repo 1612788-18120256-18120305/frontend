@@ -1,32 +1,21 @@
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
-import { Fragment, memo, useEffect } from 'react';
+import { Fragment, memo, useEffect, useLayoutEffect, useState } from 'react';
 import { Popover, Menu, Transition } from '@headlessui/react';
 import { MenuIcon, XIcon, BellIcon } from '@heroicons/react/outline';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import { io } from 'socket.io-client';
+import moment from 'moment-timezone';
 
 const socket = io(process.env.NEXT_PUBLIC_BACKEND_URL);
 // socket.on('connect', () => {
 //   console.log(socket);
 // });
 
-async function getNotification(_session) {
-  try {
-    const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/notification`, {
-      headers: {
-        Authorization: `Bearer ${_session?.jwt}`,
-      },
-    });
-    console.log(res.data);
-  } catch (error) {
-    console.log(error);
-  }
-}
-
 function Header({ active, url }) {
   const { data: session } = useSession();
+  const [notification, setNotification] = useState([]);
   const router = useRouter();
   function handleSignOut() {
     signOut({ redirect: false });
@@ -34,9 +23,22 @@ function Header({ active, url }) {
     return;
   }
 
-  // useEffect(() => {
-  //   getNotification(session);
-  // }, []);
+  useEffect(() => {
+    async function getNotification(_session) {
+      try {
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/notification`, {
+          headers: {
+            Authorization: `Bearer ${_session?.jwt}`,
+          },
+        });
+        if (res.data.success == true) setNotification(res.data.filterNotification.reverse());
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    getNotification(session);
+  }, []);
+  console.log(notification);
 
   return (
     <Popover className="sticky top-0 bg-white z-50">
@@ -120,31 +122,28 @@ function Header({ active, url }) {
                   leaveFrom="transform opacity-100 scale-100"
                   leaveTo="transform opacity-0 scale-95"
                 >
-                  <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
-                    <Menu.Item>
-                      {({ active }) => (
-                        <Link href="#">
-                          <a
-                            href="#"
-                            className="hover:bg-gray-100 block px-4 py-2 text-sm text-gray-700"
-                          >
-                            Notification
-                          </a>
-                        </Link>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <Link href="#">
-                          <a
-                            href="#"
-                            className="hover:bg-gray-100 block px-4 py-2 text-sm text-gray-700"
-                          >
-                            Notification 2
-                          </a>
-                        </Link>
-                      )}
-                    </Menu.Item>
+                  <Menu.Items className="origin-top-right absolute right-0 mt-2 w-96 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    {notification?.map((noti, key) => (
+                      <Menu.Item key={key}>
+                        {({ active }) => (
+                          <Link href="#">
+                            <div
+                              className={`hover:bg-gray-100 block px-4 py-2 text-sm text-gray-700 cursor-pointer`}
+                            >
+                              <div className={`${noti.viewed == false ? 'text-red-500' : ''}`}>
+                                {noti.course}
+                              </div>
+                              <div className="font-bold">{noti.message}</div>
+                              <div className="pb-2 border-b-2">
+                                {moment
+                                  .tz(Date.parse(noti.createdAt), 'Asia/Ho_Chi_Minh')
+                                  .format('DD/MM/YYYY HH:mm:ss')}
+                              </div>
+                            </div>
+                          </Link>
+                        )}
+                      </Menu.Item>
+                    ))}
                   </Menu.Items>
                 </Transition>
               </Menu>
