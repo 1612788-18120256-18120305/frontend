@@ -4,6 +4,7 @@ import { BACKEND_URL } from '../../../lib/Utils';
 import axios from 'axios';
 import BC from '../../../components/Course/BC';
 import Layout from '../../../components/Layout';
+import { toast } from 'react-toastify';
 export default function CoursePage({ _data }) {
   const { assignments } = _data.course;
   return (
@@ -52,6 +53,7 @@ export default function CoursePage({ _data }) {
                       <svg
                         onClick={() => {
                           navigator.clipboard.writeText(_data.course.joinId);
+                          toast.success('Copy classroom code successful');
                         }}
                         xmlns="http://www.w3.org/2000/svg"
                         className="h-8 w-8 cursor-pointer"
@@ -76,6 +78,7 @@ export default function CoursePage({ _data }) {
                               '/courses/join/' +
                               _data.course.joinId
                           );
+                          toast.success('Copy join link successful');
                         }}
                         xmlns="http://www.w3.org/2000/svg"
                         className="h-8 w-8 cursor-pointer"

@@ -1,11 +1,31 @@
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
-import { Fragment, memo } from 'react';
+import { Fragment, memo, useEffect } from 'react';
 import { Popover, Menu, Transition } from '@headlessui/react';
-import { MenuIcon, XIcon } from '@heroicons/react/outline';
+import { MenuIcon, XIcon, BellIcon } from '@heroicons/react/outline';
 import { useRouter } from 'next/router';
+import axios from 'axios';
+import { io } from 'socket.io-client';
 
-function Header({ active, url, _data }) {
+const socket = io(process.env.NEXT_PUBLIC_BACKEND_URL);
+// socket.on('connect', () => {
+//   console.log(socket);
+// });
+
+async function getNotification(_session) {
+  try {
+    const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/notification`, {
+      headers: {
+        Authorization: `Bearer ${_session?.jwt}`,
+      },
+    });
+    console.log(res.data);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+function Header({ active, url }) {
   const { data: session } = useSession();
   const router = useRouter();
   function handleSignOut() {
@@ -13,6 +33,11 @@ function Header({ active, url, _data }) {
     router.push('/auth/login');
     return;
   }
+
+  // useEffect(() => {
+  //   getNotification(session);
+  // }, []);
+
   return (
     <Popover className="sticky top-0 bg-white z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -79,16 +104,11 @@ function Header({ active, url, _data }) {
             )}
 
             <div className="hidden md:flex items-center justify-end md:flex-1 lg:w-0">
-              {/* <Menu as="div" className="ml-3 relative">
+              <Menu as="div" className="ml-3 relative">
                 <div>
-                  <Menu.Button className="max-w-xs bg-gray-800 rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                  <Menu.Button className="max-w-xs rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
                     <span className="sr-only">Open plus menu</span>
-                    <img
-                      className="h-8 w-8 rounded-full"
-                      src="https://lh3.googleusercontent.com/a/default-user=s75-c"
-                      alt=""
-                    />
-                    
+                    <BellIcon className="w-8 h-8 rounded-full" />
                   </Menu.Button>
                 </div>
                 <Transition
@@ -103,29 +123,31 @@ function Header({ active, url, _data }) {
                   <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
                     <Menu.Item>
                       {({ active }) => (
-                        <Link href="/user/account/profile">
+                        <Link href="#">
                           <a
                             href="#"
                             className="hover:bg-gray-100 block px-4 py-2 text-sm text-gray-700"
                           >
-                            Create a course
+                            Notification
                           </a>
                         </Link>
                       )}
                     </Menu.Item>
                     <Menu.Item>
                       {({ active }) => (
-                        <div
-                          className="hover:bg-gray-100 block px-4 py-2 text-sm text-gray-700 cursor-pointer"
-                          onClick={() => handleSignOut()}
-                        >
-                          Join a course
-                        </div>
+                        <Link href="#">
+                          <a
+                            href="#"
+                            className="hover:bg-gray-100 block px-4 py-2 text-sm text-gray-700"
+                          >
+                            Notification 2
+                          </a>
+                        </Link>
                       )}
                     </Menu.Item>
                   </Menu.Items>
                 </Transition>
-              </Menu> */}
+              </Menu>
 
               <Menu as="div" className="ml-3 relative">
                 <div>

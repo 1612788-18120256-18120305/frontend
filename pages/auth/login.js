@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import validator from 'email-validator';
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 export default function Login({ csrfToken }) {
   const router = useRouter();
