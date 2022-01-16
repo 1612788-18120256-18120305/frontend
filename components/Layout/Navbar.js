@@ -117,9 +117,12 @@ function Header({ active, url }) {
             <div className="hidden md:flex items-center justify-end md:flex-1 lg:w-0">
               <Menu as="div" className="ml-3 relative">
                 <div>
-                  <Menu.Button className="max-w-xs rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                  <Menu.Button className="max-w-xs rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white">
                     <span className="sr-only">Open plus menu</span>
                     <BellIcon className="w-8 h-8 rounded-full" />
+                    <div className="bg-red-500 w-5 h-5 text-white rounded-full">
+                      {notification.filter((item) => item.viewed == false).length}
+                    </div>
                   </Menu.Button>
                 </div>
                 <Transition
@@ -135,21 +138,24 @@ function Header({ active, url }) {
                     {notification?.map((noti, key) => (
                       <Menu.Item key={key}>
                         {({ active }) => (
-                          <Link href="#">
-                            <div
-                              className={`hover:bg-gray-100 block px-4 py-2 text-sm text-gray-700 cursor-pointer`}
-                            >
-                              <div className={`${noti.viewed == false ? 'text-red-500' : ''}`}>
-                                {noti.course}
+                          <div className='flex items-center justify-between border-b-2 text-sm p-4'>
+                            <Link href="#">
+                              <div
+                                className={`hover:bg-gray-100 block text-gray-700 cursor-pointer`}
+                              >
+                                <div className={`${noti.viewed == false ? 'text-red-500' : ''}`}>
+                                  {noti.course}
+                                </div>
+                                <div className="font-bold">{noti.message}</div>
+                                <div className="">
+                                  {moment
+                                    .tz(Date.parse(noti.createdAt), 'Asia/Ho_Chi_Minh')
+                                    .format('DD/MM/YYYY HH:mm:ss')}
+                                </div>
                               </div>
-                              <div className="font-bold">{noti.message}</div>
-                              <div className="pb-2 border-b-2">
-                                {moment
-                                  .tz(Date.parse(noti.createdAt), 'Asia/Ho_Chi_Minh')
-                                  .format('DD/MM/YYYY HH:mm:ss')}
-                              </div>
-                            </div>
-                          </Link>
+                            </Link>
+                            <div>Mark as read</div>
+                          </div>
                         )}
                       </Menu.Item>
                     ))}
@@ -174,7 +180,7 @@ function Header({ active, url }) {
 
               <Menu as="div" className="ml-3 relative">
                 <div>
-                  <Menu.Button className="max-w-xs bg-gray-800 rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                  <Menu.Button className="max-w-xs bg-gray-800 rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2  focus:ring-white">
                     <span className="sr-only">Open user menu</span>
                     <img
                       className="h-8 w-8 rounded-full"
