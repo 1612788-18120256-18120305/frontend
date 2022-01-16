@@ -3,13 +3,15 @@ import { BACKEND_URL } from '../../../lib/Utils';
 import { useState } from 'react';
 import InviteModal from '../../../components/Course/InviteModal';
 import axios from 'axios';
-import BC from '../../../components/Course/BC';
 import Layout from '../../../components/Layout';
+import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 
-export default function Users({ _session, _data }) {
+export default function Users({ course }) {
+  const { jwt, user } = useSelector((state) => state.storeManage);
+
   const [isTeacher, setIsTeacher] = useState(
-    _session.user._id == _data.course.owner._id ||
-      JSON.stringify(_data.course.teachers).includes(_session.user._id)
+    user._id == course.owner._id || JSON.stringify(course.teachers).includes(user._id)
   );
   const [showInviteTeacher, setShowInviteTeacher] = useState(false);
   const [showInviteStudent, setShowInviteStudent] = useState(false);
@@ -18,29 +20,30 @@ export default function Users({ _session, _data }) {
   const [loading, setLoading] = useState(false);
 
   async function handleInviteTeacherSubmit() {
-    const invitation = await axios.post(
+    const res = await axios.post(
       `${BACKEND_URL}/courses/invite`,
       {
-        courseId: _data.course._id,
+        courseId: course._id,
         email,
         type: 0,
       },
       {
         headers: {
-          Authorization: `Bearer ${_session?.jwt}`,
+          Authorization: `Bearer ${jwt}`,
         },
       }
     );
-    if (invitation.data.success) {
+    if (res.data.success) {
       setShowInviteTeacher(false);
       setEmail('');
     } else {
-      setInviteError(invitation.data.message);
+      setInviteError(res.data.message);
+      toast.error(res.data.message);
     }
   }
 
   async function handleInviteStudentSubmit() {
-    const invitation = await axios.post(
+    const res = await axios.post(
       `${BACKEND_URL}/courses/invite`,
       {
         courseId: _data.course._id,
@@ -53,11 +56,12 @@ export default function Users({ _session, _data }) {
         },
       }
     );
-    if (invitation.data.success) {
+    if (res.data.success) {
       setShowInviteStudent(false);
       setEmail('');
     } else {
-      setInviteError(invitation.data.message);
+      setInviteError(res.data.message);
+      toast.error(res.data.message);
     }
   }
 
@@ -141,90 +145,84 @@ export default function Users({ _session, _data }) {
           actions={inviteStudentActions}
         />
       )}
-      {_data && (
-        <>
-          {/* <div className="flex justify-center mb-2">
-            <BC _data={_data} active="users" />
-          </div> */}
-          <div className="flex justify-center">
-            <div className="w-full md:w-3/5">
-              <div>
-                <div className="border-solid border-b-2 border-blue-500 p-2 flex justify-between items-center">
-                  <div className="text-3xl">Giáo Viên</div>
-                  {isTeacher && (
-                    <button onClick={() => setShowInviteTeacher(true)}>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-6 w-6"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-                        />
-                      </svg>
-                    </button>
-                  )}
-                </div>
-                {_data.course.teachers.map((teacher, key) => (
-                  <div className="p-2 flex items-center" key={key}>
-                    <img
-                      className="rounded-full h-12"
-                      src="https://lh3.googleusercontent.com/a/default-user=s75-c"
-                    />
-                    <div className="p-2">
-                      {teacher.name} ({teacher.email})
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="py-2">
-                <div className="border-solid border-b-2 border-blue-500 p-2 flex justify-between items-center">
-                  <div className="text-3xl">Học Sinh</div>
-                  <div className="flex justify-center items-center">
-                    <div className="text-3xl px-2">{_data.course.students.length} sinh viên</div>
-                    {isTeacher && (
-                      <button onClick={() => setShowInviteStudent(true)}>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-6 w-6"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-                          />
-                        </svg>
-                      </button>
-                    )}
-                  </div>
-                </div>
 
-                {_data.course.students.map((student, key) => (
-                  <div className="p-2 flex items-center" key={key}>
-                    <img
-                      className="rounded-full h-12"
-                      src="https://lh3.googleusercontent.com/a/default-user=s75-c"
-                      alt="a"
+      <div className="flex justify-center">
+        <div className="w-full md:w-3/5">
+          <div>
+            <div className="border-solid border-b-2 border-blue-500 p-2 flex justify-between items-center">
+              <div className="text-3xl">Giáo Viên</div>
+              {isTeacher && (
+                <button onClick={() => setShowInviteTeacher(true)}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
                     />
-                    <div className="p-2">
-                      {student.name} ({student.email})
-                    </div>
-                  </div>
-                ))}
+                  </svg>
+                </button>
+              )}
+            </div>
+            {course.teachers.map((teacher, key) => (
+              <div className="p-2 flex items-center" key={key}>
+                <img
+                  className="rounded-full h-12"
+                  src="https://lh3.googleusercontent.com/a/default-user=s75-c"
+                />
+                <div className="p-2">
+                  {teacher.name} ({teacher.email})
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="py-2">
+            <div className="border-solid border-b-2 border-blue-500 p-2 flex justify-between items-center">
+              <div className="text-3xl">Học Sinh</div>
+              <div className="flex justify-center items-center">
+                <div className="text-3xl px-2">{course.students.length} sinh viên</div>
+                {isTeacher && (
+                  <button onClick={() => setShowInviteStudent(true)}>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                      />
+                    </svg>
+                  </button>
+                )}
               </div>
             </div>
+
+            {course.students.map((student, key) => (
+              <div className="p-2 flex items-center" key={key}>
+                <img
+                  className="rounded-full h-12"
+                  src="https://lh3.googleusercontent.com/a/default-user=s75-c"
+                  alt="a"
+                />
+                <div className="p-2">
+                  {student.name} ({student.email})
+                </div>
+              </div>
+            ))}
           </div>
-        </>
-      )}
+        </div>
+      </div>
     </>
   );
 }
@@ -236,45 +234,77 @@ Users.getLayout = function getLayout(page) {
   );
 };
 
+// export async function getServerSideProps(ctx) {
+//   const _session = await getSession(ctx);
+
+//   const res = await fetch(BACKEND_URL + ('/courses/' + ctx.query.slug), {
+//     method: 'GET',
+//     headers: {
+//       'Content-Type': 'application/json',
+//       Authorization: `Bearer ${_session?.jwt}`,
+//     },
+//   });
+//   if (res.ok) {
+//     const _data = await res.json();
+//     if (_data.success) {
+//       const invite = await axios.get(`${BACKEND_URL}/courses/${_data.course._id}/invitation`, {
+//         headers: {
+//           Authorization: `Bearer ${_session?.jwt}`,
+//         },
+//       });
+//       if (invite.data.success) {
+//         _data.course.joinId = invite.data.invitation.inviteCode;
+//       } else {
+//         _data.course.joinId = null;
+//       }
+//       return {
+//         props: { _session, _data },
+//       };
+//     } else {
+//       return {
+//         redirect: {
+//           permanent: false,
+//           destination: '/courses',
+//         },
+//       };
+//     }
+//   } else {
+//     return {
+//       redirect: {
+//         permanent: false,
+//         destination: '/auth/login',
+//       },
+//     };
+//   }
+// }
+
 export async function getServerSideProps(ctx) {
   const _session = await getSession(ctx);
 
-  const res = await fetch(BACKEND_URL + ('/courses/' + ctx.query.slug), {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${_session?.jwt}`,
-    },
-  });
-  if (res.ok) {
-    const _data = await res.json();
-    if (_data.success) {
-      const invite = await axios.get(`${BACKEND_URL}/courses/${_data.course._id}/invitation`, {
-        headers: {
-          Authorization: `Bearer ${_session?.jwt}`,
-        },
-      });
-      if (invite.data.success) {
-        _data.course.joinId = invite.data.invitation.inviteCode;
-      } else {
-        _data.course.joinId = null;
-      }
-      return {
-        props: { _session, _data },
-      };
-    } else {
-      return {
-        redirect: {
-          permanent: false,
-          destination: '/courses',
-        },
-      };
-    }
-  } else {
+  if (!_session) {
     return {
       redirect: {
         permanent: false,
         destination: '/auth/login',
+      },
+    };
+  }
+
+  const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/${ctx.query.slug}`, {
+    headers: {
+      Authorization: `Bearer ${_session.jwt}`,
+    },
+  });
+
+  if (res.data.success) {
+    return {
+      props: { course: res.data.course },
+    };
+  } else {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/courses',
       },
     };
   }

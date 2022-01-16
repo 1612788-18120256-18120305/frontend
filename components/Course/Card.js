@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from 'next/link';
 export default function CourseCard({ course }) {
   return (
     <div className="w-96 card bordered">
@@ -13,19 +13,11 @@ export default function CourseCard({ course }) {
       <div className="card-body">
         <Link href={`/courses/${course.slug}`}>
           <div className="cursor-pointer hover:text-red-500">
-            <h2 className="card-title">
-              {course.name}
-              {/* <div className="badge mx-2 badge-secondary">NEW</div> */}
-            </h2>
-            <p>{course.description}</p>
+            <h2 className="card-title">Course: {course.name}</h2>
+            <p>Description: {course.description}</p>
           </div>
         </Link>
 
-        <Link href={`/courses/${course.slug}`}>
-          <p className="cursor-pointer hover:text-red-500">
-            <a>Teacher: {course.owner.name}</a>
-          </p>
-        </Link>
         <div className="justify-end card-actions">
           <Link href={`/courses/${course.slug}`}>
             <button className="btn btn-secondary">More info</button>

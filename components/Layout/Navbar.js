@@ -9,13 +9,12 @@ import { io } from 'socket.io-client';
 import moment from 'moment-timezone';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateCourses, updateJwt, updateNotification, updateUser } from '../../redux/storeManage';
+import { toast } from 'react-toastify';
 
-const socket = io(process.env.NEXT_PUBLIC_BACKEND_URL);
-// socket.on('connect', () => {
-//   console.log(socket);
-// });
+// const socket = io(process.env.NEXT_PUBLIC_BACKEND_URL);
 
 function Header({ active, url }) {
+  const router = useRouter();
   const dispatch = useDispatch();
   const { data: session } = useSession();
   const { user, jwt, notification } = useSelector((state) => state.storeManage);
@@ -23,7 +22,6 @@ function Header({ active, url }) {
     dispatch(updateJwt(session.jwt));
     dispatch(updateUser(session.user));
   }
-  const router = useRouter();
 
   function handleSignOut() {
     signOut({ redirect: false });
@@ -49,22 +47,23 @@ function Header({ active, url }) {
     getNotification();
   }, []);
 
+  async function markAsRead(notificationId) {
+    const res = await axios.post(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/notification/${notificationId}/viewed`,
+      {
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+      }
+    );
+    if (res.data.success == true) toast.success(res.data.message);
+    else toast.error(res.data.message);
+  }
+
   return (
     <Popover className="sticky top-0 bg-white z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex justify-between items-center border-b-2 border-gray-100 py-6 md:justify-start md:space-x-10">
-          {/* <div className="flex justify-start lg:w-0 lg:flex-1">
-            <Link href="/">
-              <a>
-                <span className="sr-only">Workflow</span>
-                <img
-                  className="h-8 w-auto sm:h-10"
-                  src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"
-                  alt=""
-                />
-              </a>
-            </Link>
-          </div> */}
           <div className="-mr-2 -my-2 md:hidden">
             <Popover.Button className="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
               <span className="sr-only">Open menu</span>
@@ -143,15 +142,13 @@ function Header({ active, url }) {
                   leaveFrom="transform opacity-100 scale-100"
                   leaveTo="transform opacity-0 scale-95"
                 >
-                  <Menu.Items className="origin-top-right absolute right-0 mt-2 w-96 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <Menu.Items className="max-h-48 overflow-auto origin-top-right absolute right-0 mt-2 w-96 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
                     {notification?.map((noti, key) => (
                       <Menu.Item key={key}>
                         {({ active }) => (
-                          <div className="flex items-center justify-between border-b-2 text-sm p-4">
+                          <div className="flex items-center justify-between border-b-2 text-sm p-4 hover:bg-gray-100 ">
                             <Link href="#">
-                              <div
-                                className={`hover:bg-gray-100 block text-gray-700 cursor-pointer`}
-                              >
+                              <div className={`block text-gray-700`}>
                                 <div className={`${noti.viewed == false ? 'text-red-500' : ''}`}>
                                   {noti.course}
                                 </div>
@@ -163,7 +160,11 @@ function Header({ active, url }) {
                                 </div>
                               </div>
                             </Link>
-                            <div>Mark as read</div>
+                            {noti.viewed == false && (
+                              <div className="cursor-pointer" onClick={() => markAsRead(noti._id)}>
+                                Mark as read
+                              </div>
+                            )}
                           </div>
                         )}
                       </Menu.Item>

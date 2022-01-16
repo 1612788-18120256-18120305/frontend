@@ -1,4 +1,4 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { configureStore } from '@reduxjs/toolkit';
 import {
   persistStore,
   persistReducer,
@@ -8,14 +8,14 @@ import {
   PERSIST,
   PURGE,
   REGISTER,
-} from "redux-persist";
-import storageSession from "redux-persist/lib/storage/session";
-import rootReducer from "./storeManage";
+} from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+import rootReducer from './storeManage';
 
 const persistConfig = {
-  key: "store",
+  key: 'store',
   version: 1,
-  storage: storageSession,
+  storage,
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

@@ -1,6 +1,3 @@
-import Head from 'next/head';
-import Image from 'next/image';
-import Link from 'next/link';
 import AddModal from '../../components/Course/AddModal';
 import JoinModal from '../../components/Course/JoinModal';
 import CourseCard from '../../components/Course/Card';
@@ -8,11 +5,11 @@ import { getSession } from 'next-auth/react';
 import { BACKEND_URL } from '../../lib/Utils';
 import Layout from '../../components/Layout';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateCourses, updateJwt, updateUser } from '../../redux/storeManage';
+import { updateCourses } from '../../redux/storeManage';
 import axios from 'axios';
 import { useEffect } from 'react';
 
-export default function CoursesPage({ _session }) {
+export default function CoursesPage() {
   const dispatch = useDispatch();
   const { jwt, courses } = useSelector((state) => state.storeManage);
 
@@ -23,7 +20,7 @@ export default function CoursesPage({ _session }) {
           Authorization: `Bearer ${jwt}`,
         },
       });
-      if (res.data.success) return dispatch(updateCourses(res.data.courses));
+      if (res.data.success) return dispatch(updateCourses(res.data.courses.reverse()));
     }
     if (courses.length == 0) {
       getCourses();
@@ -62,6 +59,6 @@ export async function getServerSideProps(ctx) {
     };
   }
   return {
-    props: { _session },
+    props: {},
   };
 }

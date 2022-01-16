@@ -1,48 +1,41 @@
-import { useState } from "react";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
+import { useState } from 'react';
+import { useRouter } from 'next/router';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateCourses } from '../../redux/storeManage';
 
-export default function JoinModal({ BACKEND_URL }) {
+export default function JoinModal() {
   const router = useRouter();
-  const { data: session, status } = useSession();
-  const [alert, setAlert] = useState("");
-  const [code, setCode] = useState("");
+  const dispatch = useDispatch();
+  const { jwt, courses } = useSelector((state) => state.storeManage);
+  const [code, setCode] = useState('');
   const [open, setOpen] = useState(false);
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleSubmit = () => {
-    setAlert("");
+  const handleSubmit = async () => {
     if (code.length != 8) {
-      setAlert("Invalid code");
-      return;
+      toast.error('Invalid code');
     } else {
-      fetch(BACKEND_URL + "/courses/join/" + code, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session?.jwt}`,
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.success) {
-            setCode("");
-            handleClose();
-            router.push("/courses/" + data.course.slug);
-            return;
-          } else {
-            setAlert(data.message);
-          }
-        })
-        .catch((error) => {
-          console.error("Error:", error);
+      try {
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/join/${code}`, {
+          headers: {
+            Authorization: `Bearer ${jwt}`,
+          },
         });
+
+        if (res.data.success == true) {
+          setCode('');
+          setOpen(false);
+          toast.success(`Joined ${res.data.course.name}`);
+          dispatch(updateCourses([res.data.course, ...courses]));
+          router.push('/courses/' + res.data.course.slug);
+        } else {
+          toast.error(res.data.message);
+        }
+      } catch (error) {
+        toast.error(error.toString());
+        console.log(error);
+      }
     }
   };
 
@@ -53,10 +46,7 @@ export default function JoinModal({ BACKEND_URL }) {
           className="py-28 transition duration-150 ease-in-out z-10 absolute top-0 right-0 bottom-0 left-0"
           id="modal"
         >
-          <div
-            role="alert"
-            className="container mx-auto w-11/12 md:w-2/3 max-w-lg"
-          >
+          <div role="alert" className="container mx-auto w-11/12 md:w-2/3 max-w-lg">
             <div className="relative py-8 px-5 md:px-10 bg-white shadow-md rounded border border-gray-400">
               <div className="w-full flex justify-start text-gray-600 mb-3">
                 <svg
@@ -83,7 +73,6 @@ export default function JoinModal({ BACKEND_URL }) {
               <div className="form-control">
                 <label className="label">
                   <span className="label-text">Code</span>
-                  <div className="text-red-500">{alert}</div>
                 </label>
                 <input
                   type="text"
@@ -103,14 +92,14 @@ export default function JoinModal({ BACKEND_URL }) {
                 </button>
                 <button
                   className="focus:outline-none ml-3 bg-gray-100 transition duration-150 text-gray-600 ease-in-out hover:border-gray-400 hover:bg-gray-300 border rounded px-8 py-2 text-sm"
-                  onClick={handleClose}
+                  onClick={() => setOpen(false)}
                 >
                   Cancel
                 </button>
               </div>
               <div
                 className="cursor-pointer absolute top-0 right-0 mt-4 mr-5 text-gray-400 hover:text-gray-600 transition duration-150 ease-in-out"
-                onClick={handleClose}
+                onClick={() => setOpen(false)}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -135,7 +124,7 @@ export default function JoinModal({ BACKEND_URL }) {
         </div>
       )}
 
-      <button className="btn btn-accent" onClick={handleClickOpen}>
+      <button className="btn btn-accent" onClick={() => setOpen(true)}>
         Join Course
       </button>
     </div>

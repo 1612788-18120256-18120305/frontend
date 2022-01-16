@@ -1,6 +1,5 @@
 import { getSession } from 'next-auth/react';
 import Head from 'next/head';
-import { BACKEND_URL } from '../lib/Utils';
 import Layout from '../components/Layout';
 
 export default function Home() {

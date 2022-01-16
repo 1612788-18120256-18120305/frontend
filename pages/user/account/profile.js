@@ -2,8 +2,6 @@ import { getSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Layout from '../../../components/Layout';
-import Loading from '../../../components/Loading';
-import { BACKEND_URL } from '../../../lib/Utils';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { updateUser } from '../../../redux/storeManage';
@@ -15,21 +13,21 @@ export default function Profile() {
   const [studentId, setStudentId] = useState(user.student);
   const [name, setName] = useState(user.name);
 
-  useEffect(() => {
-    async function getUser() {
-      const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/users/${user._id}`, {
-        headers: {
-          Authorization: `Bearer ${jwt}`,
-        },
-      });
-      if (res.data.success) return dispatch(updateUser(res.data.user));
-    }
-    getUser();
-  }, []);
+  // useEffect(() => {
+  //   async function getUser() {
+  //     const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/users/${user._id}`, {
+  //       headers: {
+  //         Authorization: `Bearer ${jwt}`,
+  //       },
+  //     });
+  //     if (res.data.success) return dispatch(updateUser(res.data.user));
+  //   }
+  //   getUser();
+  // }, []);
 
   const handleSubmit = async () => {
     const res = await axios.put(
-      `${BACKEND_URL}/users/${user._id}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/${user._id}`,
       { name, student: studentId },
       {
         headers: {
