@@ -7,20 +7,40 @@ import CourseCard from '../../components/Course/Card';
 import { getSession } from 'next-auth/react';
 import { BACKEND_URL } from '../../lib/Utils';
 import Layout from '../../components/Layout';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateCourses, updateJwt, updateUser } from '../../redux/storeManage';
+import axios from 'axios';
+import { useEffect } from 'react';
 
-export default function CoursesPage({ _session, _data }) {
+export default function CoursesPage({ _session }) {
+  const dispatch = useDispatch();
+  const { jwt, courses } = useSelector((state) => state.storeManage);
+
+  useEffect(() => {
+    async function getCourses() {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/courses`, {
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+      });
+      if (res.data.success) return dispatch(updateCourses(res.data.courses));
+    }
+    if (courses.length == 0) {
+      getCourses();
+    }
+  }, []);
+
   return (
     <>
-      {_session && (
-        <div className="flex justify-center items-center">
-          <AddModal BACKEND_URL={BACKEND_URL} />
-          <div className="ml-3" />
-          <JoinModal BACKEND_URL={BACKEND_URL} />
-        </div>
-      )}
+      <div className="flex justify-center items-center">
+        <AddModal BACKEND_URL={BACKEND_URL} />
+        <div className="ml-3" />
+        <JoinModal BACKEND_URL={BACKEND_URL} />
+      </div>
+
       <div className="py-10 sm:px-10 flex justify-center relative">
         <div className="grid grid-cols-1 gap-6 2xl:grid-cols-2">
-          {_data?.courses?.reverse().map((course, key) => (
+          {courses.map((course, key) => (
             <CourseCard key={key} course={course} />
           ))}
         </div>
@@ -33,26 +53,7 @@ CoursesPage.getLayout = function getLayout(page) {
 };
 export async function getServerSideProps(ctx) {
   const _session = await getSession(ctx);
-
-  const res = await fetch(BACKEND_URL + '/courses', {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${_session?.jwt}`,
-    },
-  });
-  if (res.ok) {
-    const _data = await res.json();
-    if (_data.success) {
-      return {
-        props: { _session, _data },
-      };
-    } else {
-      return {
-        props: { _session, _data: null },
-      };
-    }
-  } else {
+  if (!_session) {
     return {
       redirect: {
         permanent: false,
@@ -60,4 +61,7 @@ export async function getServerSideProps(ctx) {
       },
     };
   }
+  return {
+    props: { _session },
+  };
 }

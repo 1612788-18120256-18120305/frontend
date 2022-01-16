@@ -1,47 +1,44 @@
-import Link from "next/link";
-import { useState } from "react";
-import validator from "email-validator";
-import { useRouter } from "next/router";
-import { BACKEND_URL } from "../../lib/Utils";
-import { signIn, getSession } from "next-auth/react";
+import Link from 'next/link';
+import { useState } from 'react';
+import validator from 'email-validator';
+import { useRouter } from 'next/router';
+import { BACKEND_URL } from '../../lib/Utils';
+import { signIn, getSession } from 'next-auth/react';
+import { toast } from 'react-toastify';
+import axios from 'axios';
 
 export default function Register() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [alert, setAlert] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
-  function handleSubmit() {
-    setAlert("");
+  async function handleSubmit() {
     if (!validator.validate(email)) {
-      setAlert("Invalid email!");
-    } else if (password == "" || confirmPassword == "") {
-      setAlert("Password required");
+      toast.error('Invalid email!');
+    } else if (password == '' || confirmPassword == '') {
+      toast.error('Password required');
     } else if (password !== confirmPassword) {
-      setAlert("Passwords are not the same!");
+      toast.error('Passwords are not the same!');
     } else {
-      fetch(BACKEND_URL + "/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password, name: email }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.success == false) {
-            setAlert(data.message);
-          } else {
-            setAlert(data.message);
-            router.push("/auth/login");
-            return;
-          }
-        })
-        .catch((error) => {
-          setAlert(error.toString());
-          console.error("Error:", error);
+      try {
+        const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/register`, {
+          email,
+          password,
+          name: email,
         });
+        if (res.data.success) {
+          toast.success(res.data.message);
+          router.push('/auth/login');
+          return;
+        } else {
+          toast.error(res.data.message);
+          console.log(res.data.message);
+        }
+      } catch (error) {
+        toast.error(error.toString());
+        console.error(error);
+      }
     }
   }
 
@@ -53,7 +50,7 @@ export default function Register() {
         </div>
         <div className="flex gap-4 item-center">
           <button
-            onClick={() => signIn("facebook")}
+            onClick={() => signIn('facebook')}
             type="button"
             className="py-2 px-4 flex justify-center items-center  bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 focus:ring-offset-blue-200 text-white w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg "
           >
@@ -70,7 +67,7 @@ export default function Register() {
             Facebook
           </button>
           <button
-            onClick={() => signIn("google")}
+            onClick={() => signIn('google')}
             type="button"
             className="py-2 px-4 flex justify-center items-center  bg-red-600 hover:bg-red-700 focus:ring-red-500 focus:ring-offset-red-200 text-white w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg "
           >
@@ -155,13 +152,7 @@ export default function Register() {
                 />
               </div>
             </div>
-            <div className="flex items-center mb-6 -mt-4">
-              <div className="flex ml-auto">
-                <div className="inline-flex text-xs font-bold text-red-500 sm:text-sm dark:text-gray-100 hover:text-gray-700 dark:hover:text-white">
-                  {alert}
-                </div>
-              </div>
-            </div>
+
             <div className="flex w-full">
               <button
                 onClick={() => handleSubmit()}
@@ -191,10 +182,10 @@ export default function Register() {
 
 export async function getServerSideProps(ctx) {
   const _session = await getSession(ctx);
-  const res = await fetch(BACKEND_URL + "/users/" + _session?.user?._id, {
-    method: "GET",
+  const res = await fetch(BACKEND_URL + '/users/' + _session?.user?._id, {
+    method: 'GET',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       Authorization: `Bearer ${_session?.jwt}`,
     },
   });
@@ -202,7 +193,7 @@ export async function getServerSideProps(ctx) {
     return {
       redirect: {
         permanent: false,
-        destination: "/courses",
+        destination: '/courses',
       },
     };
   } else {

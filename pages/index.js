@@ -13,7 +13,7 @@ export default function Home() {
       </Head>
 
       <div className="flex justify-center h-screen items-center text-red-500 font-bold text-5xl">
-        {BACKEND_URL}
+        {process.env.NEXT_PUBLIC_BACKEND_URL}
       </div>
     </>
   );
@@ -25,25 +25,7 @@ Home.getLayout = function getLayout(page) {
 
 export async function getServerSideProps(ctx) {
   const _session = await getSession(ctx);
-  const res = await fetch(BACKEND_URL + ('/users/' + _session?.user?._id), {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${_session?.jwt}`,
-    },
-  });
-  if (res.ok) {
-    const _data = await res.json();
-    if (_data.success) {
-      return {
-        props: { _session, _data },
-      };
-    } else {
-      return {
-        props: { _session, _data: null },
-      };
-    }
-  } else {
+  if (!_session) {
     return {
       redirect: {
         permanent: false,
@@ -51,4 +33,7 @@ export async function getServerSideProps(ctx) {
       },
     };
   }
+  return {
+    props: {},
+  };
 }

@@ -1,4 +1,4 @@
-import { useSession, signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { Fragment, memo, useEffect, useState } from 'react';
 import { Popover, Menu, Transition } from '@headlessui/react';
@@ -7,6 +7,8 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import { io } from 'socket.io-client';
 import moment from 'moment-timezone';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateCourses, updateJwt, updateNotification, updateUser } from '../../redux/storeManage';
 
 const socket = io(process.env.NEXT_PUBLIC_BACKEND_URL);
 // socket.on('connect', () => {
@@ -14,31 +16,38 @@ const socket = io(process.env.NEXT_PUBLIC_BACKEND_URL);
 // });
 
 function Header({ active, url }) {
+  const dispatch = useDispatch();
   const { data: session } = useSession();
-  const [notification, setNotification] = useState([]);
+  const { user, jwt, notification } = useSelector((state) => state.storeManage);
+  if (jwt == 'null') {
+    dispatch(updateJwt(session.jwt));
+    dispatch(updateUser(session.user));
+  }
   const router = useRouter();
+
   function handleSignOut() {
     signOut({ redirect: false });
+
     router.push('/auth/login');
     return;
   }
 
   useEffect(() => {
-    async function getNotification(_session) {
+    async function getNotification() {
       try {
         const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/notification`, {
           headers: {
-            Authorization: `Bearer ${_session?.jwt}`,
+            Authorization: `Bearer ${jwt}`,
           },
         });
-        if (res.data.success == true) setNotification(res.data.filterNotification.reverse());
+        if (res.data.success == true)
+          dispatch(updateNotification(res.data.filterNotification.reverse()));
       } catch (error) {
         console.log(error);
       }
     }
-    getNotification(session);
+    getNotification();
   }, []);
-  console.log(notification);
 
   return (
     <Popover className="sticky top-0 bg-white z-50">
@@ -138,7 +147,7 @@ function Header({ active, url }) {
                     {notification?.map((noti, key) => (
                       <Menu.Item key={key}>
                         {({ active }) => (
-                          <div className='flex items-center justify-between border-b-2 text-sm p-4'>
+                          <div className="flex items-center justify-between border-b-2 text-sm p-4">
                             <Link href="#">
                               <div
                                 className={`hover:bg-gray-100 block text-gray-700 cursor-pointer`}
@@ -261,68 +270,45 @@ function Header({ active, url }) {
                   </Popover.Button>
                 </div>
               </div>
-              {session ? (
-                <>
-                  <div className="grid grid-cols-2 gap-y-4 gap-x-8">
-                    <Link href="/">
-                      <a className="text-base font-medium text-gray-900 hover:text-gray-700">
-                        Home
-                      </a>
-                    </Link>
-                    <Link href="/courses">
-                      <a className="text-base font-medium text-gray-900 hover:text-gray-700">
-                        Courses
-                      </a>
-                    </Link>
+
+              <div className="grid grid-cols-2 gap-y-4 gap-x-8">
+                <Link href="/">
+                  <a className="text-base font-medium text-gray-900 hover:text-gray-700">Home</a>
+                </Link>
+                <Link href="/courses">
+                  <a className="text-base font-medium text-gray-900 hover:text-gray-700">Courses</a>
+                </Link>
+              </div>
+              <div className="pt-4 pb-3 border-t border-gray-700">
+                <div className="flex items-center px-5">
+                  <div className="flex-shrink-0">
+                    <img
+                      className="h-10 w-10 rounded-full"
+                      src="https://lh3.googleusercontent.com/a/default-user=s75-c"
+                      alt=""
+                    />
                   </div>
-                  <div className="pt-4 pb-3 border-t border-gray-700">
-                    <div className="flex items-center px-5">
-                      <div className="flex-shrink-0">
-                        <img
-                          className="h-10 w-10 rounded-full"
-                          src="https://lh3.googleusercontent.com/a/default-user=s75-c"
-                          alt=""
-                        />
-                      </div>
-                      <div className="ml-3">
-                        <div className="text-base font-medium leading-none text-white">
-                          {session?.user?.name}
-                        </div>
-                        <div className="text-sm font-medium leading-none text-gray-400">
-                          {session.user.email}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="mt-3 px-2 space-y-1">
-                      <Link href="/user/account/profile">
-                        <div className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700">
-                          Profile
-                        </div>
-                      </Link>
-                      <div
-                        onClick={() => handleSignout()}
-                        className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"
-                      >
-                        Logout
-                      </div>
+                  <div className="ml-3">
+                    <div className="text-base font-medium leading-none text-white">{user.name}</div>
+                    <div className="text-sm font-medium leading-none text-gray-400">
+                      {user.email}
                     </div>
                   </div>
-                </>
-              ) : (
-                <>
-                  <Link href="/auth/register">
-                    <a className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700">
-                      Register
-                    </a>
+                </div>
+                <div className="mt-3 px-2 space-y-1">
+                  <Link href="/user/account/profile">
+                    <div className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700">
+                      Profile
+                    </div>
                   </Link>
-                  <p className="mt-6 text-center text-base font-medium text-gray-500">
-                    Existing customer?{' '}
-                    <Link href="/auth/login">
-                      <a className="text-indigo-600 hover:text-indigo-500">Login</a>
-                    </Link>
-                  </p>
-                </>
-              )}
+                  <div
+                    onClick={() => handleSignout()}
+                    className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"
+                  >
+                    Logout
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </Popover.Panel>
