@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
-import { BACKEND_URL } from '../../../../lib/Utils';
 import { getSession } from 'next-auth/react';
 import { DragDropContext, Droppable, Draggable } from '../../../../components/common/dnd_component';
 import axios from 'axios';
-import BC from '../../../../components/Course/BC';
 import Layout from '../../../../components/Layout';
+import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 
-function GradeStructure({ listAssignment, _session, slug, course, _data }) {
+function GradeStructure({ listAssignment, course }) {
+  const { jwt } = useSelector((state) => state.storeManage);
+
   const [title, setTitle] = useState('');
   const [detail, setDetail] = useState('');
   const [assignments, setAssignments] = useState(listAssignment);
-  const [disabled, setDisabled] = useState(true);
+  // const [disabled, setDisabled] = useState(true);
 
   function handleChange(e) {
     const name = e.target.name;
@@ -25,48 +27,63 @@ function GradeStructure({ listAssignment, _session, slug, course, _data }) {
     event.preventDefault();
 
     const res = await axios.post(
-      BACKEND_URL + `/courses/${slug}/assignment`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/${course.slug}/assignment`,
       { name: title, point: detail },
       {
         headers: {
-          Authorization: `Bearer ${_session?.jwt}`,
+          Authorization: `Bearer ${jwt}`,
         },
       }
     );
-
-    // const data = await res.json();
-    setAssignments([...assignments, res.data.assignment]);
-    setTitle('');
-    setDetail('');
+    if (res.data.success) {
+      toast.success(res.data.message);
+      setAssignments([...assignments, res.data.assignment]);
+      setTitle('');
+      setDetail('');
+    } else {
+      toast.error(res.data.message);
+    }
   }
 
   async function handleEdit(item, index) {
     assignments[index].canEdit = assignments[index].canEdit === false ? true : false;
     setAssignments([...assignments]);
 
-    console.log(assignments[index].canEdit);
+    // console.log(assignments[index].canEdit);
     if (assignments[index].canEdit == true) {
       const res = await axios.patch(
-        BACKEND_URL + `/courses/${slug}/assignment/${item._id}`,
+        process.env.NEXT_PUBLIC_BACKEND_URL + `/courses/${course.slug}/assignment/${item._id}`,
         { name: assignments[index].name, point: assignments[index].point },
         {
           headers: {
-            Authorization: `Bearer ${_session?.jwt}`,
+            Authorization: `Bearer ${jwt}`,
           },
         }
       );
-      console.log(res);
+      if (res.data.success) {
+        toast.success(res.data.message);
+      } else {
+        toast.error(res.data.message);
+      }
     }
   }
 
   async function handleDelete(item, index) {
-    const res = await axios.delete(BACKEND_URL + `/courses/${slug}/assignment/${item._id}`, {
-      headers: {
-        Authorization: `Bearer ${_session?.jwt}`,
-      },
-    });
-    assignments.splice(index, 1);
-    setAssignments([...assignments]);
+    const res = await axios.delete(
+      process.env.NEXT_PUBLIC_BACKEND_URL + `/courses/${course.slug}/assignment/${item._id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+      }
+    );
+    if (res.data.success) {
+      toast.success(res.data.message);
+      assignments.splice(index, 1);
+      setAssignments([...assignments]);
+    } else {
+      toast.error(res.data.message);
+    }
   }
 
   async function handleOnDrapEnd(result) {
@@ -77,21 +94,23 @@ function GradeStructure({ listAssignment, _session, slug, course, _data }) {
     setAssignments(items);
     const assignmentIds = items.map((item) => item._id);
     const res = await axios.put(
-      BACKEND_URL + `/courses/${course._id}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/${course._id}`,
       { assignments: assignmentIds },
       {
         headers: {
-          Authorization: `Bearer ${_session?.jwt}`,
+          Authorization: `Bearer ${jwt}`,
         },
       }
     );
+    if (res.data.success) {
+      toast.success(res.data.message);
+    } else {
+      toast.error(res.data.message);
+    }
   }
 
   return (
     <div className="xl:w-2/5 xl:mx-auto">
-      {/* <div className="flex justify-center mb-2">
-        <BC _data={_data} active="grade-structure" />
-      </div> */}
       <div className="font-semibold text-center pb-2 bordered">
         <h2 className="text-3xl text-red-500">Grade Structure</h2>
       </div>
@@ -252,48 +271,10 @@ GradeStructure.getLayout = function getLayout(page) {
   );
 };
 
-export const getServerSideProps = async (context) => {
-  const _session = await getSession(context);
-  const res = await fetch(BACKEND_URL + `/courses/${context.query.slug}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${_session?.jwt}`,
-    },
-  });
+export async function getServerSideProps(ctx) {
+  const _session = await getSession(ctx);
 
-  if (res.ok) {
-    const _data = await res.json();
-    if (_data.success) {
-      // console.log(_data.course.teachers);
-      // console.log(_session.user._id);
-
-      const temp = _data.course.teachers.map((item) => item._id);
-
-      if (!temp.includes(_session.user._id)) {
-        return {
-          notFound: true,
-        };
-      }
-
-      return {
-        props: {
-          course: _data.course,
-          listAssignment: _data.course.assignments,
-          slug: context.query.slug,
-          _session,
-          _data,
-        },
-      };
-    } else {
-      return {
-        redirect: {
-          permanent: false,
-          destination: '/courses',
-        },
-      };
-    }
-  } else {
+  if (!_session) {
     return {
       redirect: {
         permanent: false,
@@ -301,4 +282,35 @@ export const getServerSideProps = async (context) => {
       },
     };
   }
-};
+
+  const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/${ctx.query.slug}`, {
+    headers: {
+      Authorization: `Bearer ${_session.jwt}`,
+    },
+  });
+
+  if (res.data.success) {
+    const course = res.data.course;
+    const temp = course.teachers.map((item) => item._id);
+
+    if (!temp.includes(_session.user._id)) {
+      return {
+        notFound: true,
+      };
+    }
+
+    return {
+      props: {
+        course,
+        listAssignment: course.assignments,
+      },
+    };
+  } else {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/courses',
+      },
+    };
+  }
+}

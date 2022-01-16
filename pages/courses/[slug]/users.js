@@ -150,7 +150,7 @@ export default function Users({ course }) {
         <div className="w-full md:w-3/5">
           <div>
             <div className="border-solid border-b-2 border-blue-500 p-2 flex justify-between items-center">
-              <div className="text-3xl">Giáo Viên</div>
+              <div className="text-3xl">Teacher</div>
               {isTeacher && (
                 <button onClick={() => setShowInviteTeacher(true)}>
                   <svg
@@ -184,9 +184,9 @@ export default function Users({ course }) {
           </div>
           <div className="py-2">
             <div className="border-solid border-b-2 border-blue-500 p-2 flex justify-between items-center">
-              <div className="text-3xl">Học Sinh</div>
+              <div className="text-3xl">Student</div>
               <div className="flex justify-center items-center">
-                <div className="text-3xl px-2">{course.students.length} sinh viên</div>
+                <div className="text-3xl px-2">{course.students.length} students</div>
                 {isTeacher && (
                   <button onClick={() => setShowInviteStudent(true)}>
                     <svg
@@ -234,49 +234,6 @@ Users.getLayout = function getLayout(page) {
   );
 };
 
-// export async function getServerSideProps(ctx) {
-//   const _session = await getSession(ctx);
-
-//   const res = await fetch(BACKEND_URL + ('/courses/' + ctx.query.slug), {
-//     method: 'GET',
-//     headers: {
-//       'Content-Type': 'application/json',
-//       Authorization: `Bearer ${_session?.jwt}`,
-//     },
-//   });
-//   if (res.ok) {
-//     const _data = await res.json();
-//     if (_data.success) {
-//       const invite = await axios.get(`${BACKEND_URL}/courses/${_data.course._id}/invitation`, {
-//         headers: {
-//           Authorization: `Bearer ${_session?.jwt}`,
-//         },
-//       });
-//       if (invite.data.success) {
-//         _data.course.joinId = invite.data.invitation.inviteCode;
-//       } else {
-//         _data.course.joinId = null;
-//       }
-//       return {
-//         props: { _session, _data },
-//       };
-//     } else {
-//       return {
-//         redirect: {
-//           permanent: false,
-//           destination: '/courses',
-//         },
-//       };
-//     }
-//   } else {
-//     return {
-//       redirect: {
-//         permanent: false,
-//         destination: '/auth/login',
-//       },
-//     };
-//   }
-// }
 
 export async function getServerSideProps(ctx) {
   const _session = await getSession(ctx);
