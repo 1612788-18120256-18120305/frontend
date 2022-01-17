@@ -29,7 +29,6 @@ const Assignment = ({ assignment, slug, reviewRequests }) => {
       },
       {
         headers: {
-          'Content-Type': 'application/json',
           Authorization: `Bearer ${jwt}`,
         },
       }

@@ -8,10 +8,13 @@ import axios from 'axios';
 import { io } from 'socket.io-client';
 import moment from 'moment-timezone';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateCourses, updateJwt, updateNotification, updateUser } from '../../redux/storeManage';
+import { updateJwt, updateNotification, updateUser } from '../../redux/storeManage';
 import { toast } from 'react-toastify';
 
 // const socket = io(process.env.NEXT_PUBLIC_BACKEND_URL);
+// socket.on('notice', (data) => {
+//   console.log(data);
+// });
 
 function Header({ active, url }) {
   const router = useRouter();
@@ -31,33 +34,37 @@ function Header({ active, url }) {
   }
 
   useEffect(() => {
-    async function getNotification() {
-      try {
-        const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/notification`, {
-          headers: {
-            Authorization: `Bearer ${jwt}`,
-          },
-        });
-        if (res.data.success == true)
-          dispatch(updateNotification(res.data.filterNotification.reverse()));
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    getNotification();
+    getNotification(jwt);
   }, []);
+
+  async function getNotification(jwt) {
+    try {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/notification`, {
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+      });
+      if (res.data.success == true)
+        dispatch(updateNotification(res.data.filterNotification.reverse()));
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   async function markAsRead(notificationId) {
     const res = await axios.post(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/notification/${notificationId}/viewed`,
+      {},
       {
         headers: {
           Authorization: `Bearer ${jwt}`,
         },
       }
     );
-    if (res.data.success == true) toast.success(res.data.message);
-    else toast.error(res.data.message);
+    if (res.data.success == true) {
+      // toast.success(res.data.message);
+      await getNotification(jwt);
+    } else toast.error(res.data.message);
   }
 
   return (

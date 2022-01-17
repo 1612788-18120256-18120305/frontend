@@ -17,7 +17,6 @@ export const getServerSideProps = async (ctx) => {
   try {
     const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/join/${code}`, {
       headers: {
-        'Content-Type': 'application/json',
         Authorization: `Bearer ${_session?.jwt}`,
       },
     });

@@ -42,7 +42,6 @@ const GradeReviewCard = ({ review, jwt, slug, assignmentId }) => {
       },
       {
         headers: {
-          'Content-Type': 'application/json',
           Authorization: `Bearer ${jwt}`,
         },
       }
