@@ -77,51 +77,53 @@ export default function GradeReview({ assignments, slug }) {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {gradeReviews.map((gradeReview, key) => (
-                  <tr key={key}>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">
-                            {gradeReview.studentId}
+                {gradeReviews
+                  .filter((gradeReview) => gradeReview.status == 0)
+                  .map((gradeReview, key) => (
+                    <tr key={key}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="ml-4">
+                            <div className="text-sm font-medium text-gray-900">
+                              {gradeReview.studentId}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{gradeReview.message}</div>
-                      <div className="text-sm text-gray-500">
-                        Actual Grade: {gradeReview.actualGrade}, Expected Grade:{' '}
-                        {gradeReview.expectedGrade}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`${gradeReview.status == 0 && 'bg-yellow-500'} ${
-                          gradeReview.status == 1 && 'bg-green-500'
-                        } flex-col${
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">{gradeReview.message}</div>
+                        <div className="text-sm text-gray-500">
+                          Actual Grade: {gradeReview.actualGrade}, Expected Grade:{' '}
+                          {gradeReview.expectedGrade}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`${gradeReview.status == 0 && 'bg-yellow-500'} 
+                        ${gradeReview.status == 1 && 'bg-green-500'} 
+                        ${
                           gradeReview.status == 2 && 'bg-red-500'
-                        } px-2 inline-flex text-xs leading-5 font-semibold rounded-full text-white`}
-                      >
-                        {gradeReview.status == 0 && 'Pending'}
-                        {gradeReview.status == 1 && 'Accept'}
-                        {gradeReview.status == 2 && 'Reject'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {moment
-                        .tz(Date.parse(gradeReview.createdAt), 'Asia/Ho_Chi_Minh')
-                        .format('HH:mm:ss DD/MM/YYYY')}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <Link
-                        href={`/courses/${slug}/grade-review/${gradeReview._id}?assignmentId=${gradeReview.assignmentId}`}
-                      >
-                        <a className="text-indigo-600 hover:text-indigo-900">View Detail</a>
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
+                        } flex-col px-2 inline-flex text-xs leading-5 font-semibold rounded-full text-white`}
+                        >
+                          {gradeReview.status == 0 && 'Pending'}
+                          {gradeReview.status == 1 && 'Accept'}
+                          {gradeReview.status == 2 && 'Reject'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {moment
+                          .tz(Date.parse(gradeReview.createdAt), 'Asia/Ho_Chi_Minh')
+                          .format('HH:mm:ss DD/MM/YYYY')}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <Link
+                          href={`/courses/${slug}/grade-review/${gradeReview._id}?assignmentId=${gradeReview.assignmentId}`}
+                        >
+                          <a className="text-indigo-600 hover:text-indigo-900">View Detail</a>
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>

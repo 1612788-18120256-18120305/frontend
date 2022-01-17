@@ -120,7 +120,11 @@ const Assignment = ({ assignment, slug, reviewRequests }) => {
 
 export default Assignment;
 Assignment.getLayout = function getLayout(page) {
-  return <Layout active={'/courses'}>{page}</Layout>;
+  return (
+    <Layout active={'/courses'} url={'grade-viewer'}>
+      {page}
+    </Layout>
+  );
 };
 
 export async function getServerSideProps(ctx) {
@@ -143,6 +147,8 @@ export async function getServerSideProps(ctx) {
       },
     }
   );
+
+  console.log(res.data);
 
   const gradeReviewRes = await axios.get(
     `${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/${ctx.query.slug}/assignment/${ctx.query.assignmentId}/review`,
