@@ -13,6 +13,7 @@ export default function CoursesPage() {
   const { jwt, courses } = useSelector((state) => state.storeManage);
 
   useEffect(() => {
+    if (jwt == 'null') return;
     async function getCourses() {
       const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/courses`, {
         headers: {
@@ -24,7 +25,7 @@ export default function CoursesPage() {
     if (courses.length == 0) {
       getCourses();
     }
-  }, []);
+  }, [jwt]);
 
   return (
     <>
