@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { useState } from 'react';
 import validator from 'email-validator';
 import { useRouter } from 'next/router';
-import { BACKEND_URL } from '../../lib/Utils';
 import { signIn, getSession } from 'next-auth/react';
 import { toast } from 'react-toastify';
 import axios from 'axios';
@@ -182,23 +181,16 @@ export default function Register() {
 
 export async function getServerSideProps(ctx) {
   const _session = await getSession(ctx);
-  const res = await fetch(BACKEND_URL + '/users/' + _session?.user?._id, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${_session?.jwt}`,
-    },
-  });
-  if (res.ok) {
-    return {
-      redirect: {
-        permanent: false,
-        destination: '/courses',
-      },
-    };
-  } else {
+  if (!_session) {
     return {
       props: {},
     };
   }
+
+  return {
+    redirect: {
+      permanent: false,
+      destination: '/courses',
+    },
+  };
 }

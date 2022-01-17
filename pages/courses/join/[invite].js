@@ -1,6 +1,5 @@
 import React from 'react';
 import axios from 'axios';
-import { BACKEND_URL } from '../../../lib/Utils';
 import { getSession } from 'next-auth/react';
 import Layout from '../../../components/Layout';
 
@@ -16,7 +15,7 @@ export const getServerSideProps = async (ctx) => {
   const _session = await getSession(ctx);
   const code = ctx.query.invite;
   try {
-    const res = await axios.get(`${BACKEND_URL}/courses/join/${code}`, {
+    const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/join/${code}`, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${_session?.jwt}`,

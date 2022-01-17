@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { BACKEND_URL } from '../../lib/Utils';
 import UploadModal from './UploadModal';
 import axios from 'axios';
 import Papa from 'papaparse';
-import { stringify } from 'postcss';
 import Router from 'next/router';
+import { toast } from 'react-toastify';
 
 const parseGradeData = (data) => {
   if (!data) {
@@ -36,7 +35,7 @@ const parseGradeData = (data) => {
   });
 };
 
-const UploadGradeModal = ({ showModal, setShowModal, setAlert, _session, _data }) => {
+const UploadGradeModal = ({ showModal, setShowModal, jwt, slug }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -54,32 +53,34 @@ const UploadGradeModal = ({ showModal, setShowModal, setAlert, _session, _data }
           const assignmentId = Object.keys(data[0])[2];
           console.log(grades);
           const res = await axios.post(
-            `${BACKEND_URL}/courses/${_data.course.slug}/assignment/${assignmentId}/upload`,
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/${slug}/assignment/${assignmentId}/upload`,
             {
               grades,
             },
             {
               headers: {
-                Authorization: `Bearer ${_session?.jwt}`,
+                Authorization: `Bearer ${jwt}`,
               },
             }
           );
           console.log(res.data);
           setLoading(false);
           setShowModal(false);
-          setAlert({ show: true, type: 'alert-success', message: 'Upload successfully!' });
-          setTimeout(() => {
-            setAlert({});
-          }, 3000);
+          toast.success('Upload successfully!');
+          // setAlert({ show: true, type: 'alert-success', message: 'Upload successfully!' });
+          // setTimeout(() => {
+          //   setAlert({});
+          // }, 3000);
 
           Router.reload(window.location.pathname);
         } catch (err) {
           setLoading(false);
           setShowModal(false);
-          setAlert({ show: true, type: 'alert-danger', message: 'Upload failed!' });
-          setTimeout(() => {
-            setAlert({});
-          }, 3000);
+          toast.success('Upload failed!');
+          // setAlert({ show: true, type: 'alert-danger', message: 'Upload failed!' });
+          // setTimeout(() => {
+          //   setAlert({});
+          // }, 3000);
         }
       },
       header: true,

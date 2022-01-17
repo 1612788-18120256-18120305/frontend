@@ -1,6 +1,5 @@
 import React from 'react';
 import axios from 'axios';
-import { BACKEND_URL } from '../../lib/Utils';
 
 const GradeReviewCard = ({ review, _session, slug, assignmentId }) => {
   const [comments, setComments] = React.useState(review.comments);
@@ -37,7 +36,7 @@ const GradeReviewCard = ({ review, _session, slug, assignmentId }) => {
     e.preventDefault();
     if (commentInput.length <= 0) return;
     const res = await axios.post(
-      `${BACKEND_URL}/courses/${slug}/assignment/${assignmentId}/review/${review._id}/comment`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/${slug}/assignment/${assignmentId}/review/${review._id}/comment`,
       {
         content: commentInput,
       },

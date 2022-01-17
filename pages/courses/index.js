@@ -2,7 +2,6 @@ import AddModal from '../../components/Course/AddModal';
 import JoinModal from '../../components/Course/JoinModal';
 import CourseCard from '../../components/Course/Card';
 import { getSession } from 'next-auth/react';
-import { BACKEND_URL } from '../../lib/Utils';
 import Layout from '../../components/Layout';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateCourses } from '../../redux/storeManage';
@@ -30,9 +29,9 @@ export default function CoursesPage() {
   return (
     <>
       <div className="flex justify-center items-center">
-        <AddModal BACKEND_URL={BACKEND_URL} />
+        <AddModal />
         <div className="ml-3" />
-        <JoinModal BACKEND_URL={BACKEND_URL} />
+        <JoinModal />
       </div>
 
       <div className="py-10 sm:px-10 flex justify-center relative">

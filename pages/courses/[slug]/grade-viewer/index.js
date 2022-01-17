@@ -1,8 +1,8 @@
 import { getSession } from 'next-auth/react';
-import { BACKEND_URL } from '../../../../lib/Utils';
 import Link from 'next/link';
 import React from 'react';
 import Layout from '../../../../components/Layout';
+import axios from 'axios';
 
 const GradeViewer = ({ assignments, slug }) => {
   let count = 0;
@@ -53,9 +53,6 @@ const GradeViewer = ({ assignments, slug }) => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 <tr>
-                  {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {countRow[key]}
-                      </td> */}
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{count}</td>
                   {assignments.map((assignment, key) => (
                     <td key={key} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -84,22 +81,34 @@ GradeViewer.getLayout = function getLayout(page) {
 export async function getServerSideProps(ctx) {
   const _session = await getSession(ctx);
 
-  const res = await fetch(BACKEND_URL + ('/courses/' + ctx.query.slug + '/assignment'), {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${_session?.jwt}`,
-    },
-  });
-  if (res.ok) {
-    const _data = await res.json();
-    if (_data.success) {
-      return {
-        props: {
-          assignments: _data.assignments,
-          slug: ctx.query.slug,
-        },
-      };
+  if (!_session) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/auth/login',
+      },
+    };
+  }
+
+  const res = await axios.get(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/${ctx.query.slug}/assignment`,
+    {
+      headers: {
+        Authorization: `Bearer ${_session.jwt}`,
+      },
     }
+  );
+
+  if (res.data.success) {
+    return {
+      props: { assignments: res.data.assignments, slug: ctx.query.slug },
+    };
+  } else {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/courses',
+      },
+    };
   }
 }

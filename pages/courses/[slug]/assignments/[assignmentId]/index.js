@@ -2,11 +2,12 @@ import React from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { getSession } from 'next-auth/react';
-import { BACKEND_URL } from '../../../../../lib/Utils';
 import GradeReviewCard from '../../../../../components/common/GradeReviewCard';
 import Layout from '../../../../../components/Layout';
+import { useSelector } from 'react-redux';
 
-const Assignment = ({ assignment, slug, _session, reviewRequests }) => {
+const Assignment = ({ assignment, slug, reviewRequests }) => {
+  const { jwt } = useSelector((state) => state.storeManage);
   //console.log(_session);
   const [grade, setGrade] = React.useState(0);
   const [message, setMessage] = React.useState('');
@@ -21,7 +22,7 @@ const Assignment = ({ assignment, slug, _session, reviewRequests }) => {
   const onSubmitReview = async (e) => {
     e.preventDefault();
     const { data } = await axios.post(
-      `${BACKEND_URL}/courses/${slug}/assignment/${assignment._id}/review`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/${slug}/assignment/${assignment._id}/review`,
       {
         expectedGrade: grade,
         message,
@@ -29,7 +30,7 @@ const Assignment = ({ assignment, slug, _session, reviewRequests }) => {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${_session?.jwt}`,
+          Authorization: `Bearer ${jwt}`,
         },
       }
     );
@@ -126,22 +127,29 @@ Assignment.getLayout = function getLayout(page) {
 export async function getServerSideProps(ctx) {
   const _session = await getSession(ctx);
 
+  if (!_session) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/auth/login',
+      },
+    };
+  }
+
   const res = await axios.get(
-    BACKEND_URL + ('/courses/' + ctx.query.slug + `/assignment/${ctx.query.assignmentId}`),
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/${ctx.query.slug}/assignment/${ctx.query.assignmentId}`,
     {
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${_session?.jwt}`,
+        Authorization: `Bearer ${_session.jwt}`,
       },
     }
   );
 
   const gradeReviewRes = await axios.get(
-    `${BACKEND_URL}/courses/${ctx.query.slug}/assignment/${ctx.query.assignmentId}/review`,
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/${ctx.query.slug}/assignment/${ctx.query.assignmentId}/review`,
     {
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${_session?.jwt}`,
+        Authorization: `Bearer ${_session.jwt}`,
       },
     }
   );
@@ -151,7 +159,6 @@ export async function getServerSideProps(ctx) {
       assignment: res.data.assignments,
       reviewRequests: gradeReviewRes.data.gradeReviews,
       slug: ctx.query.slug,
-      _session,
     },
   };
 }

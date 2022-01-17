@@ -1,7 +1,6 @@
 import { signIn, getSession, getCsrfToken } from 'next-auth/react';
-import { BACKEND_URL } from '../../lib/Utils';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import validator from 'email-validator';
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
@@ -53,40 +52,6 @@ export default function Login({ csrfToken }) {
         toast.error(error.toString());
         console.error(error);
       }
-
-      // fetch(BACKEND_URL + '/auth/login', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({ email, password }),
-      // })
-      //   .then((response) => response.json())
-      //   .then((data) => {
-      //     if (data.success) {
-      //       setAlert('');
-      //       signIn('credentials', {
-      //         redirect: false,
-      //         email,
-      //         password,
-      //       })
-      //         .then((res) => {
-      //           router.push('/courses');
-      //           return;
-      //         })
-      //         .catch((error) => {
-      //           setAlert(error.toString());
-      //           console.error('Error:', error);
-      //         });
-      //     } else {
-      //       setAlert(data.message);
-      //       toast.error(data.message);
-      //     }
-      //   })
-      //   .catch((error) => {
-      //     setAlert(error.toString());
-      //     console.error('Error:', error);
-      //   });
     }
   }
 
@@ -217,23 +182,16 @@ export default function Login({ csrfToken }) {
 
 export async function getServerSideProps(ctx) {
   const _session = await getSession(ctx);
-  const res = await fetch(BACKEND_URL + '/users/' + _session?.user?._id, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${_session?.jwt}`,
-    },
-  });
-  if (res.ok) {
-    return {
-      redirect: {
-        permanent: false,
-        destination: '/courses',
-      },
-    };
-  } else {
+  if (!_session) {
     return {
       props: { csrfToken: await getCsrfToken(ctx) },
     };
   }
+
+  return {
+    redirect: {
+      permanent: false,
+      destination: '/courses',
+    },
+  };
 }

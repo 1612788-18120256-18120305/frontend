@@ -1,5 +1,4 @@
 import { getSession } from 'next-auth/react';
-import { BACKEND_URL } from '../../../lib/Utils';
 import { useState } from 'react';
 import InviteModal from '../../../components/Course/InviteModal';
 import axios from 'axios';
@@ -21,7 +20,7 @@ export default function Users({ course }) {
 
   async function handleInviteTeacherSubmit() {
     const res = await axios.post(
-      `${BACKEND_URL}/courses/invite`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/invite`,
       {
         courseId: course._id,
         email,
@@ -44,7 +43,7 @@ export default function Users({ course }) {
 
   async function handleInviteStudentSubmit() {
     const res = await axios.post(
-      `${BACKEND_URL}/courses/invite`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/invite`,
       {
         courseId: _data.course._id,
         email,

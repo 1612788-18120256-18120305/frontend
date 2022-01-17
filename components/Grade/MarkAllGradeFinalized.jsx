@@ -1,30 +1,27 @@
 import React from 'react';
 import { useState } from 'react';
 import axios from 'axios';
-import { BACKEND_URL } from '../../lib/Utils';
+import { toast } from 'react-toastify';
 
-function MarkAllGradeFinalized({ courseSlug, assignment, _session, updateAction }) {
+function MarkAllGradeFinalized({ courseSlug, assignment, jwt, updateAction }) {
   async function handleFinalizedAllGrade() {
     const res = await axios.post(
-      BACKEND_URL + `/courses/${courseSlug}/assignment/${assignment._id}/finalizemultiple`,
-      {},
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/${courseSlug}/assignment/${assignment._id}/finalizemultiple`,
       {
         headers: {
-          Authorization: `Bearer ${_session?.jwt}`,
+          Authorization: `Bearer ${jwt}`,
         },
       }
     );
     if (res.status === 200) {
       // refetch all assignments
-      const res = await fetch(BACKEND_URL + ('/courses/' + courseSlug), {
-        method: 'GET',
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/${courseSlug}`, {
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${_session?.jwt}`,
+          Authorization: `Bearer ${jwt}`,
         },
       });
-      const data = await res.json();
-      updateAction(data.course.assignments);
+      updateAction(res.data.course.assignments);
+      toast.success('Mark all grade finalized');
     }
   }
 

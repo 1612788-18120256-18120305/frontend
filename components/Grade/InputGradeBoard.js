@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { BACKEND_URL } from '../../lib/Utils';
 
-export default function InputGradeBoard({ courseSlug, assignment, item, _session, updateAction }) {
+export default function InputGradeBoard({ courseSlug, assignment, item, jwt, updateAction }) {
   const oldGrade = assignment.grades.find((obj) => obj.id === item);
 
   const [grade, setGrade] = useState(oldGrade?.grade ?? 0);
@@ -13,11 +12,11 @@ export default function InputGradeBoard({ courseSlug, assignment, item, _session
     }
     setGrade(value);
     await axios.post(
-      BACKEND_URL + `/courses/${courseSlug}/assignment/${assignment._id}/grade`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/${courseSlug}/assignment/${assignment._id}/grade`,
       { studentId: item, grade: value },
       {
         headers: {
-          Authorization: `Bearer ${_session?.jwt}`,
+          Authorization: `Bearer ${jwt}`,
         },
       }
     );
@@ -25,24 +24,21 @@ export default function InputGradeBoard({ courseSlug, assignment, item, _session
 
   async function handleFinalizedGrade() {
     await axios.post(
-      BACKEND_URL + `/courses/${courseSlug}/assignment/${assignment._id}/finalize`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/${courseSlug}/assignment/${assignment._id}/finalize`,
       { studentId: item },
       {
         headers: {
-          Authorization: `Bearer ${_session?.jwt}`,
+          Authorization: `Bearer ${jwt}`,
         },
       }
     );
     // refetch all assignments
-    const response = await fetch(BACKEND_URL + ('/courses/' + courseSlug), {
-      method: 'GET',
+    const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/${courseSlug}`, {
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${_session?.jwt}`,
+        Authorization: `Bearer ${jwt}`,
       },
     });
-    const data = await response.json();
-    updateAction(data.course.assignments);
+    updateAction(res.data.course.assignments);
   }
 
   return (

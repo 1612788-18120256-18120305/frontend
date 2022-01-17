@@ -38,7 +38,7 @@ export default NextAuth({
         // e.g. return { id: 1, name: 'J Smith', email: 'jsmith@example.com' }
         // You can also use the `req` object to obtain additional parameters
         // (i.e., the request IP address)
-        const res = await fetch(BACKEND_URL + '/auth/login', {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`, {
           method: 'POST',
           body: JSON.stringify(credentials),
           headers: { 'Content-Type': 'application/json' },
@@ -60,18 +60,21 @@ export default NextAuth({
       if (account) {
         let data;
         if (account.provider === 'google') {
-          const res = await axios.get(BACKEND_URL + '/auth/google/token', {
+          const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/google/token`, {
             headers: {
               access_token: account.access_token,
             },
           });
           data = res.data;
         } else if (account.provider === 'facebook') {
-          const res = await axios.get(BACKEND_URL + '/auth/facebook/token', {
-            headers: {
-              access_token: account.access_token,
-            },
-          });
+          const res = await axios.get(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/facebook/token`,
+            {
+              headers: {
+                access_token: account.access_token,
+              },
+            }
+          );
           data = res.data;
         } else if (account.provider === 'credentials') {
           token.jwt = user.jwt;
