@@ -3,7 +3,6 @@ import axios from 'axios';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import FacebookProvider from 'next-auth/providers/facebook';
-import { BACKEND_URL } from '../../../lib/Utils';
 
 export default NextAuth({
   // Configure one or more authentication providers

@@ -40,15 +40,20 @@ export default function GradeBoard({ course }) {
   let initialValue = 0;
   let countRow = [];
   studentArray.map((student, key) => {
-    let temp = 0;
-    {
-      assignments.map((assignment, key) => {
-        const score = assignment.grades.find((obj) => obj.id === student)?.grade;
-        if (!isNaN(score)) temp += score;
-      });
-    }
-    countRow.push(temp);
-    // console.log(temp);
+    let count = 0;
+    let total = 0;
+    assignments.forEach((assignment) => {
+      total += assignment.point;
+    });
+    assignments.forEach((assignment) => {
+      assignment.percent = (assignment.point / total) * 100;
+    });
+    assignments.forEach((assignment) => {
+      const score = assignment.grades.find((obj) => obj.id === student)?.grade;
+      if (!isNaN(score)) count += (score * assignment.percent) / 100;
+    });
+    count = Math.round(count * 100) / 100;
+    countRow.push(count);
   });
 
   let countCol = [];
@@ -59,7 +64,6 @@ export default function GradeBoard({ course }) {
       if (!isNaN(score)) temp += score;
     });
     countCol.push(temp);
-    // console.log(temp);
   });
 
   const gradeStudent = assignments.map(
@@ -138,7 +142,7 @@ export default function GradeBoard({ course }) {
                                   assignment={item}
                                 />
                               </div>
-                              {countCol[key]}
+                              {/* {countCol[key]} */}
                             </div>
                             <MarkAllGradeFinalized
                               courseSlug={course.slug}

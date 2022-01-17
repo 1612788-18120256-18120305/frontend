@@ -7,6 +7,7 @@ function MarkAllGradeFinalized({ courseSlug, assignment, jwt, updateAction }) {
   async function handleFinalizedAllGrade() {
     const res = await axios.post(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/${courseSlug}/assignment/${assignment._id}/finalizemultiple`,
+      {},
       {
         headers: {
           Authorization: `Bearer ${jwt}`,

@@ -14,7 +14,7 @@ export default function Users({ course }) {
   );
   const [showInviteTeacher, setShowInviteTeacher] = useState(false);
   const [showInviteStudent, setShowInviteStudent] = useState(false);
-  const [inviteError, setInviteError] = useState(null);
+  // const [inviteError, setInviteError] = useState(null);
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -36,7 +36,7 @@ export default function Users({ course }) {
       setShowInviteTeacher(false);
       setEmail('');
     } else {
-      setInviteError(res.data.message);
+      // setInviteError(res.data.message);
       toast.error(res.data.message);
     }
   }
@@ -45,13 +45,13 @@ export default function Users({ course }) {
     const res = await axios.post(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/invite`,
       {
-        courseId: _data.course._id,
+        courseId: course._id,
         email,
         type: 1,
       },
       {
         headers: {
-          Authorization: `Bearer ${_session?.jwt}`,
+          Authorization: `Bearer ${jwt}`,
         },
       }
     );
@@ -59,7 +59,7 @@ export default function Users({ course }) {
       setShowInviteStudent(false);
       setEmail('');
     } else {
-      setInviteError(res.data.message);
+      // setInviteError(res.data.message);
       toast.error(res.data.message);
     }
   }
@@ -77,7 +77,7 @@ export default function Users({ course }) {
         placeholder="Email"
         className="input input-info input-bordered"
       />
-      {inviteError && <p>{inviteError}</p>}
+      {/* {inviteError && <p>{inviteError}</p>} */}
     </>
   );
   const inviteTeacherActions = (

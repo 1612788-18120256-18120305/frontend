@@ -16,7 +16,7 @@ import { toast } from 'react-toastify';
 //   console.log(data);
 // });
 
-function Header({ active, url }) {
+function Navbar({ active, url }) {
   const router = useRouter();
   const dispatch = useDispatch();
   const { data: session } = useSession();
@@ -26,16 +26,36 @@ function Header({ active, url }) {
     dispatch(updateUser(session.user));
   }
 
+  const [isTeacher, setIsTeacher] = useState(false);
+
   function handleSignOut() {
     signOut({ redirect: false });
-
     router.push('/auth/login');
     return;
   }
 
+  useEffect(async () => {
+    async function getCourse(slug) {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/${slug}`, {
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+      });
+      if (res.data.success) {
+        return res.data.course;
+      }
+    }
+    if (router.pathname.search(`slug]`) != -1) {
+      const course = await getCourse(router.query.slug);
+      if (course.teachers.filter((teacher) => teacher._id == user._id).length > 0) {
+        setIsTeacher(true);
+      }
+    }
+  }, [router.pathname]);
+
   useEffect(() => {
     getNotification(jwt);
-  }, []);
+  }, [router.pathname]);
 
   async function getNotification(jwt) {
     try {
@@ -99,33 +119,38 @@ function Header({ active, url }) {
                     Users
                   </a>
                 </Link>
-                <Link href={`/courses/${router.query.slug}/grade-structure`}>
-                  <a
-                    className={`text-base font-medium text-gray-500 hover:text-gray-900 ${
-                      url == 'grade-structure' && 'border-b-2 border-gray-500'
-                    }`}
-                  >
-                    Grade Structure
-                  </a>
-                </Link>
-                <Link href={`/courses/${router.query.slug}/grade-board`}>
-                  <a
-                    className={`text-base font-medium text-gray-500 hover:text-gray-900 ${
-                      url == 'grade-board' && 'border-b-2 border-gray-500'
-                    }`}
-                  >
-                    Grade Board
-                  </a>
-                </Link>
-                <Link href={`/courses/${router.query.slug}/grade-viewer`}>
-                  <a
-                    className={`text-base font-medium text-gray-500 hover:text-gray-900 ${
-                      url == 'grade-viewer' && 'border-b-2 border-gray-500'
-                    }`}
-                  >
-                    Grade Viewer
-                  </a>
-                </Link>
+                {isTeacher ? (
+                  <>
+                    <Link href={`/courses/${router.query.slug}/grade-structure`}>
+                      <a
+                        className={`text-base font-medium text-gray-500 hover:text-gray-900 ${
+                          url == 'grade-structure' && 'border-b-2 border-gray-500'
+                        }`}
+                      >
+                        Grade Structure
+                      </a>
+                    </Link>
+                    <Link href={`/courses/${router.query.slug}/grade-board`}>
+                      <a
+                        className={`text-base font-medium text-gray-500 hover:text-gray-900 ${
+                          url == 'grade-board' && 'border-b-2 border-gray-500'
+                        }`}
+                      >
+                        Grade Board
+                      </a>
+                    </Link>
+                  </>
+                ) : (
+                  <Link href={`/courses/${router.query.slug}/grade-viewer`}>
+                    <a
+                      className={`text-base font-medium text-gray-500 hover:text-gray-900 ${
+                        url == 'grade-viewer' && 'border-b-2 border-gray-500'
+                      }`}
+                    >
+                      Grade Viewer
+                    </a>
+                  </Link>
+                )}
               </Popover.Group>
             )}
 
@@ -135,9 +160,11 @@ function Header({ active, url }) {
                   <Menu.Button className="max-w-xs rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white">
                     <span className="sr-only">Open plus menu</span>
                     <BellIcon className="w-8 h-8 rounded-full" />
-                    <div className="bg-red-500 w-5 h-5 text-white rounded-full">
-                      {notification.filter((item) => item.viewed == false).length}
-                    </div>
+                    {notification.filter((item) => item.viewed == false).length > 0 && (
+                      <div className="bg-red-500 w-5 h-5 text-white rounded-full">
+                        {notification.filter((item) => item.viewed == false).length}
+                      </div>
+                    )}
                   </Menu.Button>
                 </div>
                 <Transition
@@ -325,4 +352,4 @@ function Header({ active, url }) {
   );
 }
 
-export default memo(Header);
+export default Navbar;

@@ -13,18 +13,6 @@ export default function Profile() {
   const [studentId, setStudentId] = useState(user.student);
   const [name, setName] = useState(user.name);
 
-  // useEffect(() => {
-  //   async function getUser() {
-  //     const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/users/${user._id}`, {
-  //       headers: {
-  //         Authorization: `Bearer ${jwt}`,
-  //       },
-  //     });
-  //     if (res.data.success) return dispatch(updateUser(res.data.user));
-  //   }
-  //   getUser();
-  // }, []);
-
   const handleSubmit = async () => {
     const res = await axios.put(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/${user._id}`,
