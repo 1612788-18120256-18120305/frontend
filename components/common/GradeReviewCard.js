@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 
-const GradeReviewCard = ({ review, _session, slug, assignmentId }) => {
+const GradeReviewCard = ({ review, jwt, slug, assignmentId }) => {
   const [comments, setComments] = React.useState(review.comments);
   const [commentInput, setCommentInput] = React.useState('');
   const onChangeComment = (e) => {
@@ -43,7 +43,7 @@ const GradeReviewCard = ({ review, _session, slug, assignmentId }) => {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${_session?.jwt}`,
+          Authorization: `Bearer ${jwt}`,
         },
       }
     );

@@ -110,7 +110,7 @@ const Assignment = ({ assignment, slug, reviewRequests }) => {
         <GradeReviewCard
           key={request._id}
           review={request}
-          _session={_session}
+          jwt={jwt}
           slug={slug}
           assignmentId={assignment._id}
         />
