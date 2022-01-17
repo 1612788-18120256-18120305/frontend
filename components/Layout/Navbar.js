@@ -18,12 +18,14 @@ import { toast } from 'react-toastify';
 
 function Navbar({ active, url }) {
   const router = useRouter();
-  const { data: session } = useSession();
   const dispatch = useDispatch();
+  const { data: session, status } = useSession();
   const { user, jwt, notification } = useSelector((state) => state.storeManage);
-  if (jwt == 'null') {
-    dispatch(updateJwt(session.jwt));
-    dispatch(updateUser(session.user));
+  if (status === 'authenticated') {
+    if (jwt == 'null') {
+      dispatch(updateJwt(session.jwt));
+      dispatch(updateUser(session.user));
+    }
   }
 
   const [isTeacher, setIsTeacher] = useState(false);
@@ -34,7 +36,11 @@ function Navbar({ active, url }) {
     return;
   }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(async () => {
+    if (status === 'loading') {
+      return;
+    }
     async function getCourse(slug) {
       const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/${slug}`, {
         headers: {
@@ -54,6 +60,9 @@ function Navbar({ active, url }) {
   }, [router.pathname]);
 
   useEffect(() => {
+    if (status === 'loading') {
+      return;
+    }
     getNotification(jwt);
   }, [router.pathname]);
 
