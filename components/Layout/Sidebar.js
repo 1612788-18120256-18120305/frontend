@@ -1,7 +1,10 @@
 import Link from 'next/link';
-import Image from "next/image"
+import Image from 'next/image';
+import { useDispatch, useSelector } from 'react-redux';
 
 export default function Sidebar({ active }) {
+  const dispatch = useDispatch();
+  const { courses } = useSelector((state) => state.storeManage);
   return (
     <div className="flex flex-no-wrap sticky top-0">
       {/* Sidebar starts */}
@@ -9,7 +12,7 @@ export default function Sidebar({ active }) {
       <div className="min-h-screen w-64 absolute sm:relative bg-gray-800 shadow md:h-full flex-col justify-between hidden sm:flex">
         <div className="px-8">
           <div className="pt-8 w-full flex items-center justify-center">
-            <Image src={"/logo.png"} width={144} height={47.25}/>
+            <Image src={'/logo.png'} width={144} height={47.25} />
             {/* <svg xmlns="http://www.w3.org/2000/svg" width={144} height={30} viewBox="0 0 144 30">
               <path
                 fill="#5F7DF2"
@@ -43,11 +46,11 @@ export default function Sidebar({ active }) {
                     <rect x={4} y={14} width={6} height={6} rx={1} />
                     <rect x={14} y={14} width={6} height={6} rx={1} />
                   </svg>
-                  <span className="text-sm  ml-2">Courses</span>
+                  <span className="text-sm ml-2">Courses</span>
                 </div>
-                {/* <div className="py-1 px-3 bg-gray-700 rounded text-gray-500 flex items-center justify-center text-xs">
-                  5
-                </div> */}
+                <div className="py-1 px-3 bg-gray-700 rounded text-gray-500 flex items-center justify-center text-xs">
+                  {courses.length}
+                </div>
               </li>
             </Link>
             <Link href={'/user/account/profile'}>

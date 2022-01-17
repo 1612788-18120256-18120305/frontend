@@ -91,8 +91,11 @@ const GradeReviewCard = ({ review, jwt, slug, assignmentId }) => {
           <div className="text-gray-900 text-base">
             Actual grade: <span>{review.actualGrade}</span>
           </div>
-          <div className="text-gray-900 text-base mb-4">
+          <div className="text-gray-900 text-base">
             Expected grade: <span>{review.expectedGrade}</span>
+          </div>
+          <div className="text-gray-900 text-base mb-4">
+            Message: <span className='font-bold'>{review.message}</span>
           </div>
           <hr></hr>
           <p className="text-gray-600 text-xs mt-2 mb-2 font-bold">{comments.length} comments</p>

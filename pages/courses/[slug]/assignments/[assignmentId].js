@@ -2,8 +2,8 @@ import React from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { getSession } from 'next-auth/react';
-import GradeReviewCard from '../../../../../components/common/GradeReviewCard';
-import Layout from '../../../../../components/Layout';
+import GradeReviewCard from '../../../../components/common/GradeReviewCard';
+import Layout from '../../../../components/Layout';
 import { useSelector } from 'react-redux';
 
 const Assignment = ({ assignment, slug, reviewRequests }) => {

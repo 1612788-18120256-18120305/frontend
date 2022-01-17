@@ -18,8 +18,8 @@ import { toast } from 'react-toastify';
 
 function Navbar({ active, url }) {
   const router = useRouter();
-  const dispatch = useDispatch();
   const { data: session } = useSession();
+  const dispatch = useDispatch();
   const { user, jwt, notification } = useSelector((state) => state.storeManage);
   if (jwt == 'null') {
     dispatch(updateJwt(session.jwt));
@@ -87,6 +87,8 @@ function Navbar({ active, url }) {
     } else toast.error(res.data.message);
   }
 
+  // console.log(notification)
+
   return (
     <Popover className="sticky top-0 bg-white z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -139,6 +141,15 @@ function Navbar({ active, url }) {
                         Grade Board
                       </a>
                     </Link>
+                    <Link href={`/courses/${router.query.slug}/grade-review`}>
+                      <a
+                        className={`text-base font-medium text-gray-500 hover:text-gray-900 ${
+                          url == 'grade-review' && 'border-b-2 border-gray-500'
+                        }`}
+                      >
+                        Grade Review
+                      </a>
+                    </Link>
                   </>
                 ) : (
                   <Link href={`/courses/${router.query.slug}/grade-viewer`}>
@@ -176,21 +187,21 @@ function Navbar({ active, url }) {
                   leaveFrom="transform opacity-100 scale-100"
                   leaveTo="transform opacity-0 scale-95"
                 >
-                  <Menu.Items className="max-h-48 overflow-auto origin-top-right absolute right-0 mt-2 w-96 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <Menu.Items className="max-h-48 overflow-auto origin-top-right absolute right-0 mt-2 w-96 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
                     {notification?.map((noti, key) => (
                       <Menu.Item key={key}>
                         {({ active }) => (
-                          <div className="flex items-center justify-between border-b-2 text-sm p-4 hover:bg-gray-100 ">
+                          <div className="flex items-center justify-between border-b-2 text-sm px-4 py-2 hover:bg-gray-100 ">
                             <Link href="#">
                               <div className={`block text-gray-700`}>
-                                <div className={`${noti.viewed == false ? 'text-red-500' : ''}`}>
-                                  {noti.course}
+                                <div className={` ${noti.viewed == false ? 'text-red-500' : ''}`}>
+                                  Course: {noti.course}
                                 </div>
                                 <div className="font-bold">{noti.message}</div>
                                 <div className="">
                                   {moment
                                     .tz(Date.parse(noti.createdAt), 'Asia/Ho_Chi_Minh')
-                                    .format('DD/MM/YYYY HH:mm:ss')}
+                                    .fromNow()}
                                 </div>
                               </div>
                             </Link>
