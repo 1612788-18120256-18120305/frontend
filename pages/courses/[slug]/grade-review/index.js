@@ -37,7 +37,9 @@ export default function GradeReview({ assignments, slug }) {
       Promise.all(arr).then((data) => {
         let arrayGradeReviews = [];
         data.forEach((item) => {
-          arrayGradeReviews = [...arrayGradeReviews, ...item];
+          if (item !== undefined) {
+            arrayGradeReviews = [...arrayGradeReviews, ...item];
+          }
         });
         setGradeReviews(arrayGradeReviews ?? []);
       });
