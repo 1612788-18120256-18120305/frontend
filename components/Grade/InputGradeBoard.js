@@ -42,8 +42,17 @@ export default function InputGradeBoard({ courseSlug, assignment, item, jwt, upd
   }
 
   return (
-    <>
-      <div className="dropdown dropdown-left absolute top-0 right-0">
+    <div className='flex justify-between items-center'>
+      <input
+        className={`${oldGrade?.draft ? '' : 'text-green-600 font-bold'}`}
+        type="number"
+        min="0"
+        max="100"
+        value={grade}
+        placeholder="..."
+        onChange={handleGradeChange}
+      />
+      <div className="dropdown dropdown-left">
         <button
           tabIndex="0"
           className="finalgrade-btn bg-white rounded-full p-1 hover:bg-gray-50 active:bg-gray-150"
@@ -61,15 +70,6 @@ export default function InputGradeBoard({ courseSlug, assignment, item, jwt, upd
           </li>
         </ul>
       </div>
-      <input
-        className={`${oldGrade?.draft ? '' : 'text-green-600 font-bold'}`}
-        type="number"
-        min="0"
-        max="100"
-        value={grade}
-        placeholder="..."
-        onChange={handleGradeChange}
-      />
-    </>
+    </div>
   );
 }

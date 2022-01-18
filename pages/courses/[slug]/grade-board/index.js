@@ -92,10 +92,6 @@ export default function GradeBoard({ course }) {
                   <button className="btn btn-secondary mr-4" onClick={() => setShowModal(true)}>
                     Upload CSV
                   </button>
-                  {/* <DownloadGradeTemplateButton
-                      studentIds={_data.course.studentIds}
-                      assignment={_data.course.assignments[0]}
-                    /> */}
                   <button
                     className="btn btn-secondary mr-4"
                     onClick={() => setShowGradeModal(true)}
@@ -132,24 +128,26 @@ export default function GradeBoard({ course }) {
                             scope="col"
                             className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider relative"
                           >
-                            <div className="flex items-center">
-                              <div className="px-1">
-                                {item.name} - {item.point}
+                            <div className="flex items-center justify-between">
+                              <div className='flex items-center'>
+                                <div className="px-1">
+                                  {item.name} - {item.point}
+                                </div>
+                                <div>
+                                  <DownloadGradeTemplateButton
+                                    studentIds={course.studentIds}
+                                    assignment={item}
+                                  />
+                                </div>
+                                {/* {countCol[key]} */}
                               </div>
-                              <div>
-                                <DownloadGradeTemplateButton
-                                  studentIds={course.studentIds}
-                                  assignment={item}
-                                />
-                              </div>
-                              {/* {countCol[key]} */}
+                              <MarkAllGradeFinalized
+                                courseSlug={course.slug}
+                                assignment={item}
+                                jwt={jwt}
+                                updateAction={setAssignments}
+                              />
                             </div>
-                            <MarkAllGradeFinalized
-                              courseSlug={course.slug}
-                              assignment={item}
-                              jwt={jwt}
-                              updateAction={setAssignments}
-                            />
                           </th>
                         ))}
                       </tr>

@@ -105,6 +105,15 @@ export async function getServerSideProps(ctx) {
     }
   );
 
+  if (!res.data.success) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/courses',
+      },
+    };
+  }
+
   const review = await axios.get(
     `${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/${ctx.query.slug}/assignment/${ctx.query.assignmentId}/review/${ctx.query.id}`,
     {
@@ -113,6 +122,15 @@ export async function getServerSideProps(ctx) {
       },
     }
   );
+
+  if (!review.data.success) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/courses',
+      },
+    };
+  }
 
   return {
     props: {

@@ -29,7 +29,7 @@ export default function CoursePage({ course }) {
       <div className="flex justify-center">
         <div className="relative">
           <img
-            className="rounded-xl"
+            className="rounded-xl w-screen"
             src="https://www.gstatic.com/classroom/themes/img_backtoschool.jpg"
           />
           <div className="absolute bottom-1 left-1 md:bottom-5 md:left-5 text-white">
@@ -54,21 +54,21 @@ export default function CoursePage({ course }) {
           </div>
         </div>
       </div>
-      <div className="flex justify-center items-center">
+      <div className="flex justify-between items-center">
         <div className="w-1/2">
           {invite && (
-            <div className="card shadow-lg w-64 bg-gray-300">
+            <div className="card shadow-lg w-64 bg-gray-100">
               <div className="card-body">
-                <h2 className="card-title">Classroom Code</h2>
+                <h2 className="card-title font-bold">Classroom Code</h2>
                 <div className="flex justify-between item-center">
-                  <p className="text-blue-500 text-2xl">{invite}</p>
+                  <p className="text-blue-500 font-bold text-2xl">{invite}</p>
                   <svg
                     onClick={() => {
                       navigator.clipboard.writeText(invite);
                       toast.success('Copy classroom code successful');
                     }}
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-8 w-8 cursor-pointer"
+                    className="h-8 w-8 cursor-pointer hover:bg-gray-300 rounded-xl"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -82,7 +82,7 @@ export default function CoursePage({ course }) {
                   </svg>
                 </div>
                 <div className="flex justify-between item-center pt-3">
-                  <p className="text-2xl">Join Link</p>
+                  <p className="text-2xl font-semibold">Invite Link</p>
                   <svg
                     onClick={() => {
                       navigator.clipboard.writeText(
@@ -91,7 +91,7 @@ export default function CoursePage({ course }) {
                       toast.success('Copy join link successful');
                     }}
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-8 w-8 cursor-pointer"
+                    className="h-8 w-8 cursor-pointer hover:bg-gray-300 rounded-xl"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -108,14 +108,14 @@ export default function CoursePage({ course }) {
             </div>
           )}
 
-          <div className="card shadow-lg w-64 bg-gray-300 my-3">
+          <div className="card shadow-lg w-64 bg-gray-100 my-3">
             <div className="card-body">
               <div className="flex flex-col justify-center">
-                <h3 className="font-bold">Grade structure</h3>
+                <h3 className="card-title font-bold">Grade structure</h3>
                 <ul>
                   {course.assignments.length > 0 ? (
                     course.assignments.map((item, index) => (
-                      <li key={index}>
+                      <li className="text-2xl font-bold" key={index}>
                         {item.name}: <span>{item.point}</span>
                       </li>
                     ))
@@ -137,6 +137,7 @@ export default function CoursePage({ course }) {
             </div>
           </div>
         </div>
+        <div></div>
       </div>
     </div>
   );
