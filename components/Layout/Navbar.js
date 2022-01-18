@@ -1,6 +1,6 @@
 import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { Fragment, memo, useEffect, useState } from 'react';
+import { Fragment, memo, useEffect, useRef, useState } from 'react';
 import { Popover, Menu, Transition } from '@headlessui/react';
 import { MenuIcon, XIcon, BellIcon } from '@heroicons/react/outline';
 import { useRouter } from 'next/router';
@@ -16,7 +16,10 @@ import { toast } from 'react-toastify';
 //   console.log(data);
 // });
 
+//let socket = null;
+
 function Navbar({ active, url }) {
+  const socket = useRef(null);
   const router = useRouter();
   const dispatch = useDispatch();
   const { data: session, status } = useSession();
@@ -35,6 +38,18 @@ function Navbar({ active, url }) {
     router.push('/auth/login');
     return;
   }
+
+  useEffect(() => {
+    if (status === 'loading' || socket.current !== null) return;
+    socket.current = io(process.env.NEXT_PUBLIC_BACKEND_URL);
+    socket.current.emit('authenticate', { token: jwt });
+    socket.current.on('notice', (d) => {
+      getNotification(jwt);
+    });
+    return () => {
+      socket.current.close();
+    };
+  }, [jwt, dispatch, getNotification]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(async () => {

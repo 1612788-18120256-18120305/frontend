@@ -101,8 +101,6 @@ export default NextAuth({
         session.jwt = token.jwt;
         session.user = token.user;
       }
-
-      console.log(session);
       return session;
     },
   },
