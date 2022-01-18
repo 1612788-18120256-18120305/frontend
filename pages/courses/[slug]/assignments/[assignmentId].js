@@ -148,8 +148,6 @@ export async function getServerSideProps(ctx) {
     }
   );
 
-  console.log(res.data);
-
   const gradeReviewRes = await axios.get(
     `${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/${ctx.query.slug}/assignment/${ctx.query.assignmentId}/review`,
     {

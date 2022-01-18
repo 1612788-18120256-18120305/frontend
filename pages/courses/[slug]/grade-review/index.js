@@ -25,16 +25,19 @@ export default function GradeReview({ assignments, slug }) {
     return null;
   }
 
-  let arrayGradeReviews = [];
+  //let arrayGradeReviews = [];
   useEffect(() => {
-    async function getArrayReviews() {
-      assignments.map(async (assignment) => {
+    function getArrayReviews() {
+      const arr = assignments.map(async (assignment) => {
         const data = await getGradeReview(assignment);
         if (data.length > 0) {
-          arrayGradeReviews.push(...data);
+          //arrayGradeReviews.push(...data);
+          return data;
         }
       });
-      setGradeReviews(arrayGradeReviews);
+      Promise.all(arr).then((data) => {
+        setGradeReviews(data[0] ?? []);
+      });
     }
     getArrayReviews();
   }, []);
