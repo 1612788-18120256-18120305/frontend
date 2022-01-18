@@ -34,8 +34,8 @@ function Navbar({ active, url }) {
   const [isTeacher, setIsTeacher] = useState(false);
 
   function handleSignOut() {
-    signOut({ redirect: false });
-    router.push('/auth/login');
+    signOut({ redirect:'/auth/login'});
+    //router.push('/auth/login');
     return;
   }
 

@@ -238,7 +238,7 @@ function GradeStructure({ listAssignment, course }) {
           </div>
           <div className="form-group">
             <label htmlFor="detail" className="mb-2">
-              Grade detail
+              Ratio
             </label>
             <input
               id="detail"
