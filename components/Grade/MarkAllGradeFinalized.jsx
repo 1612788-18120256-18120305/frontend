@@ -28,7 +28,7 @@ function MarkAllGradeFinalized({ courseSlug, assignment, jwt, updateAction }) {
 
   return (
     <>
-      <div className="dropdown dropdown-left absolute top-0 right-0">
+      <div className="dropdown dropdown-left">
         <button
           tabIndex="0"
           className="finalgrade-btn rounded-full p-1 hover:bg-gray-50 active:bg-gray-150"
