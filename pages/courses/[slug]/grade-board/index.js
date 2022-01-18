@@ -87,16 +87,16 @@ export default function GradeBoard({ course }) {
                     className="btn btn-primary mr-4"
                     download="Template"
                   >
-                    Download CSV
+                    Download Student Template
                   </a>
                   <button className="btn btn-secondary mr-4" onClick={() => setShowModal(true)}>
-                    Upload CSV
+                    Upload Student CSV
                   </button>
                   <button
                     className="btn btn-secondary mr-4"
                     onClick={() => setShowGradeModal(true)}
                   >
-                    Upload grade
+                    Upload Grade CSV
                   </button>
                   <ExportGradeButton course={course} />
                 </div>

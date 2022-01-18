@@ -10,7 +10,16 @@ export default function InputGradeBoard({ courseSlug, assignment, item, jwt, upd
     if (value > 100 || value < 0 || value.length > 3) {
       return;
     }
+
     setGrade(value);
+    // refetch all assignments
+    const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/${courseSlug}`, {
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
+    });
+    updateAction(res.data.course.assignments);
+
     await axios.post(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/${courseSlug}/assignment/${assignment._id}/grade`,
       { studentId: item, grade: value },
@@ -44,7 +53,7 @@ export default function InputGradeBoard({ courseSlug, assignment, item, jwt, upd
   return (
     <div className='flex justify-between items-center'>
       <input
-        className={`${oldGrade?.draft ? '' : 'text-green-600 font-bold'}`}
+        className={`${oldGrade?.draft|| !oldGrade ? '' : 'text-green-600 font-bold'}`}
         type="number"
         min="0"
         max="100"

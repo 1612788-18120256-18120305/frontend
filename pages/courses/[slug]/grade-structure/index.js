@@ -19,7 +19,9 @@ function GradeStructure({ listAssignment, course }) {
     if (name === 'title') {
       setTitle(e.target.value);
     } else {
-      setDetail(e.target.value);
+      if(e.target.value >= 0) {
+        setDetail(e.target.value);
+      }
     }
   }
 
@@ -178,10 +180,13 @@ function GradeStructure({ listAssignment, course }) {
                           w-full
                           py-2
                           focus:outline-none focus:border-blue-400"
+                          type="number"
                           value={item.point}
                           onChange={(e) => {
-                            assignments[index].point = e.target.value;
-                            setAssignments([...assignments]);
+                            if(e.target.value >= 0) {
+                              assignments[index].point = e.target.value;
+                              setAssignments([...assignments]);
+                            }
                           }}
                           disabled={item.canEdit == undefined ? true : item.canEdit}
                         />
@@ -251,6 +256,7 @@ function GradeStructure({ listAssignment, course }) {
               w-full
               py-2
               focus:outline-none focus:border-blue-400"
+              type="number"
               value={detail}
               onChange={handleChange}
             />
