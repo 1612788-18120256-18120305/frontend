@@ -25,7 +25,6 @@ export default function GradeReview({ assignments, slug }) {
     return null;
   }
 
-  //let arrayGradeReviews = [];
   useEffect(() => {
     function getArrayReviews() {
       const arr = assignments.map(async (assignment) => {
@@ -36,7 +35,13 @@ export default function GradeReview({ assignments, slug }) {
         }
       });
       Promise.all(arr).then((data) => {
-        setGradeReviews(data[0] ?? []);
+        let arrayGradeReviews = [];
+        data.forEach((item) => {
+          if (item !== undefined) {
+            arrayGradeReviews = [...arrayGradeReviews, ...item];
+          }
+        });
+        setGradeReviews(arrayGradeReviews ?? []);
       });
     }
     getArrayReviews();

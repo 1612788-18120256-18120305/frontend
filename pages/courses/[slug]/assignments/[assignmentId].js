@@ -14,7 +14,7 @@ const Assignment = ({ assignment, slug, reviewRequests }) => {
 
   const onChangeGrade = (e) => {
     const value = e.target.value;
-    if (value > 10 || value < 0) return;
+    if (value > 100 || value < 0) return;
     setGrade(e.target.value);
   };
   const hasPendingReview = reviewRequests.some((review) => review.status === 0);
