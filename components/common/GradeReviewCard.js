@@ -81,7 +81,7 @@ const GradeReviewCard = ({ review, jwt, slug, assignmentId }) => {
   );
 
   return (
-    <div className="flex justify-center">
+    <div className="flex justify-center mb-4">
       <div className="flex flex-col md:flex-row md:max-w-xl rounded-lg bg-white shadow-lg">
         <div className="p-6 flex flex-col justify-start">
           <h5 className="text-gray-900 text-xl font-medium mb-2">{date}</h5>
@@ -95,7 +95,7 @@ const GradeReviewCard = ({ review, jwt, slug, assignmentId }) => {
             Expected grade: <span>{review.expectedGrade}</span>
           </div>
           <div className="text-gray-900 text-base mb-4">
-            Message: <span className='font-bold'>{review.message}</span>
+            Message: <span className="font-bold">{review.message}</span>
           </div>
           <hr></hr>
           <p className="text-gray-600 text-xs mt-2 mb-2 font-bold">{comments.length} comments</p>

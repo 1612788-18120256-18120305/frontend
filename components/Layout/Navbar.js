@@ -44,12 +44,14 @@ function Navbar({ active, url }) {
     socket.current = io(process.env.NEXT_PUBLIC_BACKEND_URL);
     socket.current.emit('authenticate', { token: jwt });
     socket.current.on('notice', (d) => {
+      console.log('New notification');
       getNotification(jwt);
     });
     return () => {
-      socket.current.close();
+      socket.current.disconnect();
+      socket.current = null;
     };
-  }, [jwt, dispatch, getNotification]);
+  }, [status]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(async () => {
@@ -72,7 +74,7 @@ function Navbar({ active, url }) {
         setIsTeacher(true);
       }
     }
-  }, [router.pathname]);
+  }, [router.pathname, status]);
 
   useEffect(() => {
     if (status === 'loading') {

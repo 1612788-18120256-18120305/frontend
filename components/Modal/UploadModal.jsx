@@ -24,7 +24,6 @@ const UploadModal = ({
   );
 
   function changeHandler(event) {
-    console.log(event.target);
     setSelectedFile(event.target.files[0]);
     setIsFilePicked(true);
   }

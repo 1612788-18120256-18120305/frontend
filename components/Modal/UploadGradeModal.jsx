@@ -13,7 +13,6 @@ const parseGradeData = (data) => {
     throw new Error('Invalid file format');
   }
   const assignmentName = Object.keys(data[0])[1];
-  console.log(assignmentName);
   const filterGrade = data.filter((item) => {
     if (item.StudentId.length === 0) {
       return false;
@@ -51,7 +50,6 @@ const UploadGradeModal = ({ showModal, setShowModal, jwt, slug }) => {
         try {
           const grades = parseGradeData(data);
           const assignmentId = Object.keys(data[0])[2];
-          console.log(grades);
           const res = await axios.post(
             `${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/${slug}/assignment/${assignmentId}/upload`,
             {
@@ -63,7 +61,6 @@ const UploadGradeModal = ({ showModal, setShowModal, jwt, slug }) => {
               },
             }
           );
-          console.log(res.data);
           setLoading(false);
           setShowModal(false);
           toast.success('Upload successfully!');
